@@ -352,7 +352,7 @@ public class OrderServiceImpl implements IOrderService {
                 .setUndiscountableAmount(undiscountableAmount).setSellerId(sellerId).setBody(body)
                 .setOperatorId(operatorId).setStoreId(storeId).setExtendParams(extendParams)
                 .setTimeoutExpress(timeoutExpress)
-                .setNotifyUrl("http://localhost:8443/api/order/calback")//支付宝服务器主动通知商户服务器里指定的页面http路径,根据需要设置
+                .setNotifyUrl("http://47.103.118.92:8443/api/order/callback")//支付宝服务器主动通知商户服务器里指定的页面http路径,根据需要设置
                 .setGoodsDetailList(goodsDetailList);
 
         System.out.println(builder);
@@ -468,10 +468,11 @@ public class OrderServiceImpl implements IOrderService {
         payInfo.setUser_id(order.getUser_id());
         payInfo.setOrder_id(order.getId());
         payInfo.setPlatform(Const.PayPlatformEnum.ALIPAY.getCode());
-        payInfo.setSerial_number(Long.valueOf(tradeNo));
-        payInfo.setStatus(Integer.valueOf(tradeStatus));
+        payInfo.setSerial_number(tradeNo);
+        payInfo.setStatus(tradeStatus);
 
         payInfoDAO.insert(payInfo);
+        System.out.println(payInfo);
 
         return ServerResponse.createBySuccess();
         //return null;

@@ -26,7 +26,7 @@ public interface OrderDAO {
                     "#{end_time}, #{close_time}, #{create_time}, #{update_time})"})
     int insert(Order order);
 
-    @Update({"update my_order status=#{status} where id=#{id}"})
+    @Update({"update my_order set status=#{status} where id=#{id}"})
     int updateByKey(Order order);
 
     @Insert({})
@@ -42,7 +42,8 @@ public interface OrderDAO {
     Order selectByUserIdAndOrderNo(@Param("user_id") Long userId, @Param("order_id") Long orderId);
 
 
-    Order selectByOrderNo(Long orderNo);
+    @Select({"select * from my_order where id=#{id}"})
+    Order selectByOrderNo(Long id);
 
 
     List<Order> selectByUserId(Integer userId);

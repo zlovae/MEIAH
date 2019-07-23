@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 @Mapper
 public interface PayInfoDAO {
     String TABLE_NAME = "my_pay_info";
-    String INSERT_FIELDS = " ( user_id, store_id, order_id, shipping_id, shipping_price, payment, platform, status, serial_number, creat_time, update_time ) ";
-
+    String TABLE_FIELDS = " ( user_id, store_id, order_id, shipping_id, shipping_price, payment, platform, status, serial_number, creat_time, update_time ) ";
+    String INSERT_FIELDS = "( user_id, order_id, platform, status, serial_number ) ";
 
     @Insert({"insert into my_pay_info ", INSERT_FIELDS, " values (#{user_id}, #{order_id}, #{platform}, #{status}, #{serial_number})"})
     int insert(PayInfo payInfo);

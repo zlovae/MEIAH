@@ -12,8 +12,8 @@ public class PayInfo implements Serializable {
     private Double shipping_price;
     private Double payment;
     private Integer platform;
-    private Integer status;
-    private Long serial_number;
+    private String status;
+    private String serial_number;
     private Date creat_time;
     private Date update_time;
 
@@ -36,7 +36,7 @@ public class PayInfo implements Serializable {
                 '}';
     }
 
-    public PayInfo(Long id, Long user_id, Long store_id, Long order_id, Long shipping_id, Double shipping_price, Double payment, Integer platform, Integer status, Long serial_number, Date creat_time, Date update_time) {
+    public PayInfo(Long id, Long user_id, Long store_id, Long order_id, Long shipping_id, Double shipping_price, Double payment, Integer platform, String status, String serial_number, Date creat_time, Date update_time) {
         this.id = id;
         this.user_id = user_id;
         this.store_id = store_id;
@@ -118,19 +118,19 @@ public class PayInfo implements Serializable {
         this.platform = platform;
     }
 
-    public Integer getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(Integer status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 
-    public Long getSerial_number() {
+    public String getSerial_number() {
         return serial_number;
     }
 
-    public void setSerial_number(Long serial_number) {
+    public void setSerial_number(String serial_number) {
         this.serial_number = serial_number;
     }
 
