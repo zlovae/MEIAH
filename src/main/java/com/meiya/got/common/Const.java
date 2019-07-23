@@ -51,12 +51,12 @@ public class Const {
 
 
     public enum OrderStatusEnum{
-        CANCELED(0,"已取消"),
-        NO_PAY(10,"未支付"),
-        PAID(20,"已付款"),
-        SHIPPED(40,"已发货"),
-        ORDER_SUCCESS(50,"订单完成"),
-        ORDER_CLOSE(60,"订单关闭");
+        NO_PAY(0,"未支付"),
+        PAID(1,"已支付"),
+        SHIPPED(2,"已发货"),
+        ORDER_SUCCESS(3,"交易成功"),
+        CANCELED(4,"订单取消"),
+        ORDER_CLOSE(5,"订单关闭");
 
 
         OrderStatusEnum(int code,String value){

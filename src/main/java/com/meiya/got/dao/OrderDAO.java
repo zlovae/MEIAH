@@ -26,12 +26,15 @@ public interface OrderDAO {
                     "#{end_time}, #{close_time}, #{create_time}, #{update_time})"})
     int insert(Order order);
 
+    @Update({"update my_order status=#{status} where id=#{id}"})
+    int updateByKey(Order order);
+
     @Insert({})
     int insertSelective(Order record);
 
     Order selectByPrimaryKey(Integer id);
 
-    int updateByPrimaryKeySelective(Order record);
+    //int updateByPrimaryKeySelective(Order record);
 
     int updateByPrimaryKey(Order record);
 

@@ -6,9 +6,9 @@ spring:
   velocity:
     suffix: ".html"
   datasource:
-    url: jdbc:mysql://localhost:3306/meiya?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf8&useSSL=false
+    url: jdbc:mysql://47.103.118.92:3306/meiya?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf8&useSSL=false
     username: root
-    password: Nothing1106.
+    password: meiahgot
     driver-class-name: com.mysql.cj.jdbc.Driver
 
 

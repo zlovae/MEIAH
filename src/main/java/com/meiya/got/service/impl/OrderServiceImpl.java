@@ -18,10 +18,12 @@ import com.meiya.got.common.Const;
 import com.meiya.got.common.ServerResponse;
 import com.meiya.got.dao.*;
 import com.meiya.got.po.*;
+import com.meiya.got.sender.FanoutSender;
 import com.meiya.got.service.IOrderService;
 import com.meiya.got.util.BigDecimalUtil;
 import com.meiya.got.util.JedisUtil;
 import com.meiya.got.util.RedisKeyUtil;
+import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +61,12 @@ public class OrderServiceImpl implements IOrderService {
 
     @Autowired
     private OrderItemDAO orderItemDAO;
+
+    @Autowired
+    private FanoutSender fanoutSender;
+
+    @Autowired
+    private PayInfoDAO payInfoDAO;
 
     // 支付宝当面付2.0服务
     private static AlipayTradeService   tradeService;
@@ -168,6 +176,7 @@ public class OrderServiceImpl implements IOrderService {
         //付款时间等等
         int rowCount = orderDAO.insert(order);
         if (rowCount > 0) {
+            fanoutSender.send(order);
             return order;
         }
         return null;
@@ -343,7 +352,7 @@ public class OrderServiceImpl implements IOrderService {
                 .setUndiscountableAmount(undiscountableAmount).setSellerId(sellerId).setBody(body)
                 .setOperatorId(operatorId).setStoreId(storeId).setExtendParams(extendParams)
                 .setTimeoutExpress(timeoutExpress)
-                .setNotifyUrl("http://www.test-notify-url.com")//支付宝服务器主动通知商户服务器里指定的页面http路径,根据需要设置
+                .setNotifyUrl("http://localhost:8443/api/order/calback")//支付宝服务器主动通知商户服务器里指定的页面http路径,根据需要设置
                 .setGoodsDetailList(goodsDetailList);
 
         System.out.println(builder);
@@ -435,9 +444,37 @@ public class OrderServiceImpl implements IOrderService {
     }
 
     @Override
-    public ServerResponse orderCallBack(Long userId, Long orderId) {
+    public ServerResponse orderCallBack(Map<String, String> params) {
         //TODO
-        return null;
+        Long orderNo = Long.parseLong(params.get("out_trade_no"));
+        String tradeNo = params.get("trade_no");
+        String tradeStatus = params.get("trade_status");
+        Order order = orderDAO.selectByOrderNo(orderNo);
+        if (order == null) {
+            return ServerResponse.createByErrorMessage("回调忽略");
+        }
+        if (order.getStatus() >= Const.OrderStatusEnum.PAID.getCode()) {
+            return ServerResponse.createBySuccess("支付宝重复调用");
+        }
+        if (Const.AlipayCallback.TRADE_STATUS_TRADE_SUCCESS.equals(tradeStatus)) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            //order.setPayment_time(sdf.parse(params.get("gmt_payment")));
+            order.setStatus(Const.OrderStatusEnum.PAID.getCode());
+            orderDAO.updateByKey(order);
+            //orderMapper.updateByPrimaryKeySelective(order);
+        }
+
+        PayInfo payInfo = new PayInfo();
+        payInfo.setUser_id(order.getUser_id());
+        payInfo.setOrder_id(order.getId());
+        payInfo.setPlatform(Const.PayPlatformEnum.ALIPAY.getCode());
+        payInfo.setSerial_number(Long.valueOf(tradeNo));
+        payInfo.setStatus(Integer.valueOf(tradeStatus));
+
+        payInfoDAO.insert(payInfo);
+
+        return ServerResponse.createBySuccess();
+        //return null;
     }
 
     @Override

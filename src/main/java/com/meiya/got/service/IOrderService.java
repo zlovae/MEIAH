@@ -7,6 +7,7 @@ import com.meiya.got.po.PayInfo;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public interface IOrderService {
@@ -30,7 +31,7 @@ public interface IOrderService {
     //查看订单列表
     ServerResponse orderList(Long userId, Long orderId);
     //支付宝回调
-    ServerResponse orderCallBack(Long userId, Long orderId);
+    ServerResponse orderCallBack(Map<String, String> params);
     //查看订单状态
     ServerResponse orderStatus(Long userId, Long orderId);
 

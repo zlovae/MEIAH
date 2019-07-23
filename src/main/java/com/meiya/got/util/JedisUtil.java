@@ -1,5 +1,6 @@
 package com.meiya.got.util;
 
+import com.meiya.got.po.Store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -25,7 +26,7 @@ public class JedisUtil implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        pool = new JedisPool("redis://localhost:6379/10");
+        pool = new JedisPool("redis://47.103.118.92:6379/10");
     }
 
     public long hset(String key, String field, String value) {
@@ -108,6 +109,20 @@ public class JedisUtil implements InitializingBean {
                 jedis.close();
             }
         }
+    }
+
+    public List<String> sgetall(String key) {
+        Jedis jedis = null;
+        try {
+            //return jedis.s
+        } catch (Exception e) {
+            logger.error("发生异常" + e.getMessage());
+        } finally {
+            if(jedis!=null) {
+                jedis.close();
+            }
+        }
+        return null;
     }
 
 }
