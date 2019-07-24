@@ -29,7 +29,7 @@ public interface IOrderService {
     //查看订单详情
     ServerResponse orderDetail(Long userId, Long orderId);
     //查看订单列表
-    ServerResponse orderList(Long userId, Long orderId);
+    ServerResponse orderList(Long userId);
     //支付宝回调
     ServerResponse orderCallBack(Map<String, String> params);
     //查看订单状态

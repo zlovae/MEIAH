@@ -19,6 +19,10 @@ public class StoresController {
     @ResponseBody
     public List<Store> shops(){
         List<Store> all = storeService.findAll();
+        //TODO
+
+
+
         System.out.println(all);
         return all;
     }

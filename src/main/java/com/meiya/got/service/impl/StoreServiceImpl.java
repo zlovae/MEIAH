@@ -20,6 +20,11 @@ public class StoreServiceImpl implements IStoreService {
 
     public List<Store> findAll(){
         //
+
+
+
         return storeDAO.findAll();
     }
+
+
 }

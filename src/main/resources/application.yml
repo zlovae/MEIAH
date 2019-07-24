@@ -10,7 +10,11 @@ spring:
     username: root
     password: meiahgot
     driver-class-name: com.mysql.cj.jdbc.Driver
-
+  rabbitmq:
+    host: 47.103.118.92
+    username: admin
+    password: 123456
+    port: 5672
 
 
 spring.jpa.hibernate.naming.physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl

@@ -125,4 +125,17 @@ public class JedisUtil implements InitializingBean {
         return null;
     }
 
+//    public List<String> sgetall(String key) {
+//        Jedis jedis = null;
+//        try {
+//            //return jedis.s
+//        } catch (Exception e) {
+//            logger.error("发生异常" + e.getMessage());
+//        } finally {
+//            if(jedis!=null) {
+//                jedis.close();
+//            }
+//        }
+//        return null;
+//    }
 }

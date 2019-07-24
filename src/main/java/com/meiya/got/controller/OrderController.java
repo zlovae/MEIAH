@@ -140,15 +140,24 @@ public class OrderController {
         return Const.AlipayCallback.RESPONSE_FAILED;
     }
 
-    @RequestMapping("/status")
+    @RequestMapping("status")
     @ResponseBody
-    public ServerResponse payStatus(Long orderId, HttpSession httpSession) {
-        User user = (User) httpSession.getAttribute(Const.CURRENT_USER);
-        if(user==null) {
-            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), ResponseCode.NEED_LOGIN.getDesc());
-        } else {
-            return iOrderService.payOrder(user.getId(), orderId);
+    public int queryOrderPayStatus(@RequestParam("uid") Long uid, @RequestParam("oid") Long oid) {
+        ServerResponse serverResponse = iOrderService.orderStatus(uid, oid);
+        if (serverResponse.isSuccess()) {
+            return 1;
         }
+        return 0;
+    }
+
+    @RequestMapping("historyorder")
+    @ResponseBody
+    public ServerResponse queryOrderList(@RequestParam("uid") Long uid) {
+        ServerResponse serverResponse = iOrderService.orderList(uid);
+        if (serverResponse.isSuccess()) {
+            return serverResponse;
+        }
+        return ServerResponse.createByError();
     }
 
 }

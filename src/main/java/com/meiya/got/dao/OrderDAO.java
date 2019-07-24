@@ -49,5 +49,6 @@ public interface OrderDAO {
     List<Order> selectByUserId(Integer userId);
 
 
-    List<Order> selectAllOrder();
+    @Select({"select * from my_order where user_id=#{userId}"})
+    List<Order> selectAllOrder(Long userId);
 }

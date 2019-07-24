@@ -144,6 +144,8 @@ public class OrderServiceImpl implements IOrderService {
         jedisUtil.delall(RedisKeyUtil.getCartKey(phone, storeId));
         System.out.println("删除购物车成功");
         System.out.println(order.getId());
+        MsgConnection msgConnection = new MsgConnection(order.getId(), 0, 1, order.getStore_id(), order.getUser_id());
+        fanoutSender.send(msgConnection);
         return this.payOrder(userId, order.getId());
 
         //返回给前端数据
@@ -168,7 +170,7 @@ public class OrderServiceImpl implements IOrderService {
         order.setStore_id(storeId);
         order.setStatus(Const.OrderStatusEnum.NO_PAY.getCode());
         order.setPostage(0);
-        order.setPayment_type(Const.PaymentTypeEnum.ONLINE_PAY.getCode());
+        //order.setPayment_type(Const.PaymentTypeEnum.ONLINE_PAY.getCode());
         order.setPayment(payment);
 
         order.setUser_id(userId);
@@ -176,7 +178,7 @@ public class OrderServiceImpl implements IOrderService {
         //付款时间等等
         int rowCount = orderDAO.insert(order);
         if (rowCount > 0) {
-            fanoutSender.send(order);
+            //fanoutSender.send(order);
             return order;
         }
         return null;
@@ -353,10 +355,12 @@ public class OrderServiceImpl implements IOrderService {
                 .setOperatorId(operatorId).setStoreId(storeId).setExtendParams(extendParams)
                 .setTimeoutExpress(timeoutExpress)
                 .setNotifyUrl("http://47.103.118.92:8443/api/order/callback")//支付宝服务器主动通知商户服务器里指定的页面http路径,根据需要设置
+                //
                 .setGoodsDetailList(goodsDetailList);
 
         System.out.println(builder);
         AlipayF2FPrecreateResult result = tradeService.tradePrecreate(builder);
+
 
         System.out.println(result.getTradeStatus());
         switch (result.getTradeStatus()) {
@@ -438,9 +442,14 @@ public class OrderServiceImpl implements IOrderService {
     }
 
     @Override
-    public ServerResponse orderList(Long userId, Long orderId) {
-        //TODO
-        return null;
+    public ServerResponse<List<Order>> orderList(Long userId) {
+        //TODO ordervo
+        List<Order> orderList = orderDAO.selectAllOrder(userId);
+        try {
+            return ServerResponse.createBySuccess(orderList);
+        } catch (Exception e) {
+            return ServerResponse.createByErrorMessage(e.toString());
+        }
     }
 
     @Override
@@ -474,6 +483,8 @@ public class OrderServiceImpl implements IOrderService {
         payInfoDAO.insert(payInfo);
         System.out.println(payInfo);
 
+        MsgConnection msgConnection = new MsgConnection(order.getId(), 0, 2, order.getStore_id(), order.getUser_id());
+        fanoutSender.send(msgConnection);
         return ServerResponse.createBySuccess();
         //return null;
     }
@@ -481,6 +492,13 @@ public class OrderServiceImpl implements IOrderService {
     @Override
     public ServerResponse orderStatus(Long userId, Long orderId) {
         //TODO
-        return null;
+        Order order = orderDAO.selectByUserIdAndOrderNo(userId, orderId);
+        if (order == null) {
+            return ServerResponse.createByErrorMessage("用户没有该订单");
+        }
+        if (order.getStatus() >= Const.OrderStatusEnum.PAID.getCode()) {
+            return ServerResponse.createBySuccess();
+        }
+        return ServerResponse.createByError();
     }
 }
