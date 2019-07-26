@@ -40,7 +40,7 @@ public class SendTests {
         rabbitTemplate.setReturnCallback(returnCallback);
         //id + 时间戳 全局唯一
 
-        rabbitTemplate.convertAndSend("user.exchange", "store.user",  msgConnection);
+        rabbitTemplate.convertAndSend("store.exchange", "user.store",  msgConnection);
     }
 
 }
