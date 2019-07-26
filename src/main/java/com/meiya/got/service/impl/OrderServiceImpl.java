@@ -488,8 +488,8 @@ public class OrderServiceImpl implements IOrderService {
         payInfoDAO.insert(payInfo);
         System.out.println(payInfo);
 
-        //MsgConnection msgConnection = new MsgConnection(order.getId(), 0, 2, order.getStore_id(), order.getUser_id());
-        //fanoutSender.send(msgConnection);
+        MsgConnection msgConnection = new MsgConnection(order.getId(), 0, 2, order.getStore_id(), order.getUser_id());
+        fanoutSender.send(msgConnection);
         return ServerResponse.createBySuccess();
         //return null;
     }
