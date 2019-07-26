@@ -2,6 +2,8 @@ package com.meiya.got;
 
 import java.util.*;
 import com.meiya.got.dao.OrderDAO;
+import com.meiya.got.po.MsgConnection;
+import com.meiya.got.sender.SendTests;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,8 +11,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import redis.clients.jedis.Jedis;
 
-//@RunWith(SpringRunner.class)
-//@SpringBootTest
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class OrderServiceTest {
 
     @Autowired
@@ -37,8 +39,21 @@ public class OrderServiceTest {
         //return Long.valueOf(new StringBuffer().append(ordernoIndex).append(String.valueOf(orderId)).toString());
    // }
 
-    public static void main(String[] args) {
+    @Autowired
+    private SendTests sendTests;
 
+    @Test
+    public  void test() {
+        MsgConnection msgConnection1 = new MsgConnection(1L, 1, 1, 1L, 1L);
+        MsgConnection msgConnection2 = new MsgConnection(1L, 1, 1, 4L, 1L);
+        MsgConnection msgConnection3 = new MsgConnection(1L, 1, 1, 7L, 1L);
+        try {
+            sendTests.sendToUser(msgConnection1);
+            sendTests.sendToUser(msgConnection2);
+            sendTests.sendToUser(msgConnection3);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

@@ -1,57 +1,53 @@
 package com.meiya.got.po;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 public class Cart implements Serializable {
-    private Long id;
-    private Long user_id;
+//    private Long id;
+//    private Long user_id;
+    private Long store_id;
     private Long product_id;
+    private String name;
+    private BigDecimal price;
     private Integer quantity;
-    private Integer checked;
-    private Date create_time;
-    private Date update_time;
+    private BigDecimal total_price;
+    //private Integer checked;
+//    private Date create_time;
+//    private Date update_time;
 
-    @Override
-    public String toString() {
-        return "Cart{" +
-                "id=" + id +
-                ", user_id=" + user_id +
-                ", product_id=" + product_id +
-                ", quantity=" + quantity +
-                ", checked=" + checked +
-                ", creat_time=" + create_time +
-                ", update_time=" + update_time +
-                '}';
-    }
 
-    public Cart(Long id, Long user_id, Long product_id, Integer quantity, Integer checked, Date creat_time, Date update_time) {
-        this.id = id;
-        this.user_id = user_id;
+    public Cart(Long store_id, Long product_id, String name, BigDecimal price, Integer quantity, BigDecimal total_price) {
+        this.store_id = store_id;
         this.product_id = product_id;
+        this.name = name;
+        this.price = price;
         this.quantity = quantity;
-        this.checked = checked;
-        this.create_time = creat_time;
-        this.update_time = update_time;
+        this.total_price = total_price;
     }
 
     public Cart() {
     }
 
-    public Long getId() {
-        return id;
+    @Override
+    public String toString() {
+        return "Cart{" +
+                "store_id=" + store_id +
+                ", product_id=" + product_id +
+                ", name='" + name + '\'' +
+                ", price=" + price +
+                ", quantity=" + quantity +
+                ", total_price=" + total_price +
+                '}';
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Long getStore_id() {
+        return store_id;
     }
 
-    public Long getUser_id() {
-        return user_id;
-    }
-
-    public void setUser_id(Long user_id) {
-        this.user_id = user_id;
+    public void setStore_id(Long store_id) {
+        this.store_id = store_id;
     }
 
     public Long getProduct_id() {
@@ -62,6 +58,22 @@ public class Cart implements Serializable {
         this.product_id = product_id;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
     public Integer getQuantity() {
         return quantity;
     }
@@ -70,27 +82,11 @@ public class Cart implements Serializable {
         this.quantity = quantity;
     }
 
-    public Integer getCheck() {
-        return checked;
+    public BigDecimal getTotal_price() {
+        return total_price;
     }
 
-    public void setCheck(Integer checked) {
-        this.checked = checked;
-    }
-
-    public Date getCreat_time() {
-        return create_time;
-    }
-
-    public void setCreat_time(Date creat_time) {
-        this.create_time = creat_time;
-    }
-
-    public Date getUpdate_time() {
-        return update_time;
-    }
-
-    public void setUpdate_time(Date update_time) {
-        this.update_time = update_time;
+    public void setTotal_price(BigDecimal total_price) {
+        this.total_price = total_price;
     }
 }

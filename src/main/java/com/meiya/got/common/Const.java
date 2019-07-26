@@ -113,6 +113,7 @@ public class Const {
     }
 
     public enum PaymentTypeEnum{
+        NOT_PAY(0, "未支付"),
         ONLINE_PAY(1,"在线支付");
 
         PaymentTypeEnum(int code,String value){

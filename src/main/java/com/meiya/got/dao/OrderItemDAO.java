@@ -15,7 +15,7 @@ public interface OrderItemDAO {
 
     @Results(id = "OrderItemMap", value = {
             //@Result(column = "id", property = "id", javaType = Long.class),
-            @Result(column = "product_id", property = "food_id", javaType = Long.class),
+            @Result(column = "food_id", property = "food_id", javaType = Long.class),
             @Result(column = "name", property = "name", javaType = String.class),
             //@Result(column = "order_id", property = "order_id", javaType = Long.class),
             //@Result(column = "photo", property = "photo", javaType = String.class),
@@ -31,11 +31,13 @@ public interface OrderItemDAO {
             "<script>",
             "insert into my_order_item ( ", INSERT_FIELDS, " ) values ",
             "<foreach collection='list' item='item' index='index' separator=','>",
-            "(#{item.name}, #{item.order_id}, #{item.product_id}, #{item.photo}, #{item.price}, #{item.quantity}, #{item.discount_id}, #{item.total_price})",
+            "(#{item.name}, #{item.order_id}, #{item.food_id}, #{item.photo}, #{item.price}, #{item.quantity}, #{item.discount_id}, #{item.total_price})",
             "</foreach>",
             "</script>"
     })
     int batchInsert(@Param(value = "list") List<OrderItem> orderItemList);
 
+    @Select({"select * from my_order_item where order_id=#{order_id}"})
+    List<OrderItem> selectItemByOrderId(Long order_id);
 
 }

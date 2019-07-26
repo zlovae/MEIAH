@@ -59,4 +59,15 @@ public class MsgConnection implements Serializable {
     public void setUser_id(Long user_id) {
         this.user_id = user_id;
     }
+
+    @Override
+    public String toString() {
+        return "MsgConnection{" +
+                "order_id=" + order_id +
+                ", store_mid=" + store_mid +
+                ", user_mid=" + user_mid +
+                ", store_id=" + store_id +
+                ", user_id=" + user_id +
+                '}';
+    }
 }

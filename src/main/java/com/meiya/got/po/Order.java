@@ -9,36 +9,25 @@ import java.util.Date;
  * */
 public class Order implements Serializable {
     private Long id;
-
     private Long store_id;
-
     private Long user_id;
-
     private Integer shipping_id;
-
     private BigDecimal payment;
-
     private Integer payment_type;
-
     private String qr_code;
-
-    private Integer postage;
-
+    //private Integer postage;
     private Integer status;
-
     private Date payment_time;
-
     private Date send_time;
-
     private Date end_time;
-
     private Date close_time;
-
     private Date create_time;
-
     private Date update_time;
+    private String note;
+    private String address;
+    private Integer comment_status;
 
-    public Order(Long id, Long store_id, Long user_id, Integer shipping_id, BigDecimal payment, Integer payment_type, String qr_code, Integer postage, Integer status, Date payment_time, Date send_time, Date end_time, Date close_time, Date create_time, Date update_time) {
+    public Order(Long id, Long store_id, Long user_id, Integer shipping_id, BigDecimal payment, Integer payment_type, String qr_code, Integer status, Date payment_time, Date send_time, Date end_time, Date close_time, Date create_time, Date update_time, String note, String address, Integer comment_status) {
         this.id = id;
         this.store_id = store_id;
         this.user_id = user_id;
@@ -46,7 +35,6 @@ public class Order implements Serializable {
         this.payment = payment;
         this.payment_type = payment_type;
         this.qr_code = qr_code;
-        this.postage = postage;
         this.status = status;
         this.payment_time = payment_time;
         this.send_time = send_time;
@@ -54,6 +42,9 @@ public class Order implements Serializable {
         this.close_time = close_time;
         this.create_time = create_time;
         this.update_time = update_time;
+        this.note = note;
+        this.address = address;
+        this.comment_status = comment_status;
     }
 
     public Order() {
@@ -115,14 +106,6 @@ public class Order implements Serializable {
         this.qr_code = qr_code;
     }
 
-    public Integer getPostage() {
-        return postage;
-    }
-
-    public void setPostage(Integer postage) {
-        this.postage = postage;
-    }
-
     public Integer getStatus() {
         return status;
     }
@@ -179,6 +162,30 @@ public class Order implements Serializable {
         this.update_time = update_time;
     }
 
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public Integer getComment_status() {
+        return comment_status;
+    }
+
+    public void setComment_status(Integer comment_status) {
+        this.comment_status = comment_status;
+    }
+
     @Override
     public String toString() {
         return "Order{" +
@@ -189,7 +196,6 @@ public class Order implements Serializable {
                 ", payment=" + payment +
                 ", payment_type=" + payment_type +
                 ", qr_code='" + qr_code + '\'' +
-                ", postage=" + postage +
                 ", status=" + status +
                 ", payment_time=" + payment_time +
                 ", send_time=" + send_time +
@@ -197,6 +203,9 @@ public class Order implements Serializable {
                 ", close_time=" + close_time +
                 ", create_time=" + create_time +
                 ", update_time=" + update_time +
+                ", note='" + note + '\'' +
+                ", address='" + address + '\'' +
+                ", comment_status=" + comment_status +
                 '}';
     }
 }

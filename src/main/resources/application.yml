@@ -15,6 +15,17 @@ spring:
     username: admin
     password: 123456
     port: 5672
+    publisher-confirms: true
+    publisher-returns: true
+
+    template:
+      mandatory=true:
+    listener:
+      simple:
+        acknowledge-mode: manual
+        concurrency: 1
+        max-concurrency: 10
+        prefetch: 2
 
 
 spring.jpa.hibernate.naming.physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl

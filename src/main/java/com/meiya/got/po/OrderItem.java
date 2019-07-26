@@ -8,18 +8,18 @@ public class OrderItem implements Serializable {
     private Long id;
     private String name;
     private Long order_id;
-    private Long product_id;
+    private Long food_id;
     private String photo;
     private BigDecimal price;
     private Integer quantity ;
     private Long discount_id;
     private BigDecimal total_price;
 
-    public OrderItem(Long id, String name, Long order_id, Long product_id, String photo, BigDecimal price, Integer quantity, Long discount_id, BigDecimal total_price) {
+    public OrderItem(Long id, String name, Long order_id, Long food_id, String photo, BigDecimal price, Integer quantity, Long discount_id, BigDecimal total_price) {
         this.id = id;
         this.name = name;
         this.order_id = order_id;
-        this.product_id = product_id;
+        this.food_id = food_id;
         this.photo = photo;
         this.price = price;
         this.quantity = quantity;
@@ -55,11 +55,11 @@ public class OrderItem implements Serializable {
     }
 
     public Long getProduct_id() {
-        return product_id;
+        return food_id;
     }
 
     public void setProduct_id(Long product_id) {
-        this.product_id = product_id;
+        this.food_id = product_id;
     }
 
     public String getPhoto() {

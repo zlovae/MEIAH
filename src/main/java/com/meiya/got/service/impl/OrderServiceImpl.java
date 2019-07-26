@@ -50,6 +50,9 @@ public class OrderServiceImpl implements IOrderService {
     @Autowired
     private UserDAO userDAO;
 
+//    @Autowired
+//    private CartDAO cartDAO;
+
     @Autowired
     private JedisUtil jedisUtil;
 
@@ -169,8 +172,9 @@ public class OrderServiceImpl implements IOrderService {
 
         order.setStore_id(storeId);
         order.setStatus(Const.OrderStatusEnum.NO_PAY.getCode());
-        order.setPostage(0);
-        //order.setPayment_type(Const.PaymentTypeEnum.ONLINE_PAY.getCode());
+        //order.setPostage(0);
+        order.setComment_status(0);
+        order.setPayment_type(Const.PaymentTypeEnum.NOT_PAY.getCode());
         order.setPayment(payment);
 
         order.setUser_id(userId);
@@ -179,6 +183,7 @@ public class OrderServiceImpl implements IOrderService {
         int rowCount = orderDAO.insert(order);
         if (rowCount > 0) {
             //fanoutSender.send(order);
+            order.setId(orderNo);
             return order;
         }
         return null;
@@ -433,12 +438,12 @@ public class OrderServiceImpl implements IOrderService {
     }
 
     @Override
-    public ServerResponse orderDetail(Long userId, Long orderId) {
-        Order order = orderDAO.selectByUserIdAndOrderNo(userId, orderId);
-        if(order==null) {
+    public ServerResponse orderDetail(Long orderId) {
+        List<OrderItem> orderItemList = orderItemDAO.selectItemByOrderId(orderId);
+        if(orderItemList==null) {
             return ServerResponse.createByErrorMessage("订单不存在");
         }
-        return ServerResponse.createBySuccess(order);
+        return ServerResponse.createBySuccess(orderItemList);
     }
 
     @Override
@@ -483,8 +488,8 @@ public class OrderServiceImpl implements IOrderService {
         payInfoDAO.insert(payInfo);
         System.out.println(payInfo);
 
-        MsgConnection msgConnection = new MsgConnection(order.getId(), 0, 2, order.getStore_id(), order.getUser_id());
-        fanoutSender.send(msgConnection);
+        //MsgConnection msgConnection = new MsgConnection(order.getId(), 0, 2, order.getStore_id(), order.getUser_id());
+        //fanoutSender.send(msgConnection);
         return ServerResponse.createBySuccess();
         //return null;
     }
@@ -500,5 +505,35 @@ public class OrderServiceImpl implements IOrderService {
             return ServerResponse.createBySuccess();
         }
         return ServerResponse.createByError();
+    }
+
+    @Override
+    public ServerResponse orderOneMore(Long orderId) {
+        //TODO 再来一单 根据订单号找到Item，把Item推到购物车
+        try {
+            Order order = orderDAO.selectByOrderNo(orderId);
+            List<OrderItem> orderItemList = orderItemDAO.selectItemByOrderId(orderId);
+            List<Cart> cartList = new ArrayList<>();
+            String key = RedisKeyUtil.getCartKey(userDAO.getById(order.getUser_id()).getPhone(), order.getStore_id());
+
+            for (OrderItem item : orderItemList) {
+                Cart cart = new Cart();
+                cart.setProduct_id(item.getProduct_id());
+                cart.setName(item.getName());
+                cart.setStore_id(order.getStore_id());
+                BigDecimal price = foodsDAO.selectById(item.getProduct_id()).getPrice();
+                cart.setPrice(price);
+                Integer quantity = item.getQuantity();
+                cart.setQuantity(quantity);
+                cart.setTotal_price(price.multiply(BigDecimal.valueOf(quantity)));
+                cartList.add(cart);
+                String field = RedisKeyUtil.getCartField(item.getProduct_id());
+                jedisUtil.hset(key, field, item.getQuantity().toString());
+            }
+            System.out.println(orderItemList);
+            return ServerResponse.createBySuccess(cartList);
+        } catch (Exception e) {
+            return ServerResponse.createByErrorMessage(e.toString());
+        }
     }
 }

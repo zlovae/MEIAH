@@ -53,17 +53,6 @@ public class OrderController {
         return iOrderService.createOrder(phone, storeId);
     }
 
-    @RequestMapping("/detail")
-    @ResponseBody
-    public ServerResponse orderDetail(Long orderId, HttpSession session) {
-        User user = (User) session.getAttribute(Const.CURRENT_USER);
-        if(user==null) {
-            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), ResponseCode.NEED_LOGIN.getDesc());
-        } else {
-            return iOrderService.orderDetail(user.getId(), orderId);
-        }
-    }
-
     @RequestMapping("/cancel")
     @ResponseBody
     public ServerResponse cancel(Long orderId, HttpSession httpSession) {
@@ -160,4 +149,28 @@ public class OrderController {
         return ServerResponse.createByError();
     }
 
+    @RequestMapping("order/items")
+    @ResponseBody
+    public ServerResponse queryOrderItem(@RequestParam("oid") Long oid) {
+        ServerResponse serverResponse = iOrderService.orderDetail(oid);
+        if (serverResponse.isSuccess()) {
+            return serverResponse;
+        }
+        return ServerResponse.createByError();
+    }
+
+    /**
+     * @function 再来一单
+     * @return List<OrderItem>;
+     * @param oid
+     * */
+    @RequestMapping("order/onemore")
+    @ResponseBody
+    public ServerResponse orderOneMore(@RequestParam("oid") Long oid) {
+        ServerResponse serverResponse = iOrderService.orderOneMore(oid);
+        if (serverResponse.isSuccess()) {
+            return serverResponse;
+        }
+        return ServerResponse.createByError();
+    }
 }

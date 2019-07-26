@@ -27,13 +27,15 @@ public interface IOrderService {
     //取消订单
     ServerResponse cancelOrder(Long userId, Long orderId);
     //查看订单详情
-    ServerResponse orderDetail(Long userId, Long orderId);
+    ServerResponse orderDetail(Long orderId);
     //查看订单列表
     ServerResponse orderList(Long userId);
     //支付宝回调
     ServerResponse orderCallBack(Map<String, String> params);
     //查看订单状态
     ServerResponse orderStatus(Long userId, Long orderId);
+
+    ServerResponse orderOneMore(Long orderId);
 
     /****************************************************商户端**************************************************/
 
