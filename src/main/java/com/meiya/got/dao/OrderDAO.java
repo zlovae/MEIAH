@@ -39,6 +39,6 @@ public interface OrderDAO {
     @Select({"select * from my_order where user_id=#{userId}"})
     List<Order> selectAllOrder(Long userId);
 
-    @Update({"update my_order set comment_status=#{comment_status}"})
+    @Update({"update my_order set comment_status=#{comment_status} where id=#{id}"})
     int updateCommentStatus(Order order);
 }
