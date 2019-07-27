@@ -40,17 +40,30 @@ public class OrderController {
     @Autowired
     private UserServiceImpl iUserService;
 
-
+    /**@function 修改购物车
+     * @return success/error
+     * @param phone
+     * @param storeid
+     * @param foodid
+     * @param quantity
+     * */
     @PostMapping("cart")
     @ResponseBody
     public ServerResponse setCart(@RequestParam("phone")String phone ,@RequestParam("sid")Long storeid,@RequestParam("fid")Long foodid,@RequestParam("num")Integer quantity) {
         return iOrderService.setCart(phone, storeid, foodid, quantity);
     }
 
+    /**@function 提交购物车并转到支付页面
+     * TODO : 多种支付方式
+     * @return Order
+     * @param phone
+     * @param storeId
+     * @param payMethod
+     * */
     @PutMapping("order")
     @ResponseBody
-    public ServerResponse createOrder(@RequestParam("phone")String phone, @RequestParam("sid")Long storeId) {
-        return iOrderService.createOrder(phone, storeId);
+    public ServerResponse createOrder(@RequestParam("phone")String phone, @RequestParam("sid")Long storeId, @RequestParam("mid")Integer payMethod) throws Exception {
+        return iOrderService.createOrder(phone, storeId, payMethod);
     }
 
     @RequestMapping("/cancel")
@@ -76,20 +89,20 @@ public class OrderController {
         }
     }
 
-    @RequestMapping("/pay")
-    @ResponseBody
-    public ServerResponse payOrder(@RequestParam("order_id") Long orderId, HttpSession httpSession) {
-        User user = (User) httpSession.getAttribute(Const.CURRENT_USER);
-        if(user==null) {
-            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), ResponseCode.NEED_LOGIN.getDesc());
-        } else {
-            return iOrderService.payOrder(user.getId(), orderId);
-        }
-    }
+//    @RequestMapping("/pay")
+//    @ResponseBody
+//    public ServerResponse payOrder(@RequestParam("order_id") Long orderId, HttpSession httpSession) {
+//        User user = (User) httpSession.getAttribute(Const.CURRENT_USER);
+//        if(user==null) {
+//            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), ResponseCode.NEED_LOGIN.getDesc());
+//        } else {
+//            return iOrderService.payOrder(user.getId(), orderId);
+//        }
+//    }
 
     @RequestMapping("order/callback")
     @ResponseBody
-    public Object orderCallback(HttpServletRequest request) {
+    public Object orderCallback(HttpServletRequest request) throws Exception {
         Map<String, String> params = Maps.newHashMap();
 
         Map requestParams = request.getParameterMap();
@@ -173,4 +186,14 @@ public class OrderController {
         }
         return ServerResponse.createByError();
     }
+
+//    @RequestMapping("order/refund")
+//    @ResponseBody
+//    public ServerResponse orderRefund(@RequestParam("oid") Long oid) {
+//        ServerResponse serverResponse = iOrderService.
+//        if (serverResponse.isSuccess()) {
+//            return serverResponse;
+//        }
+//        return ServerResponse.createByError();
+//    }
 }

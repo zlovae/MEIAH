@@ -34,7 +34,7 @@ public class SendTests {
     };
 
     //发送消息方法调用: 构建Message消息
-    public void sendToUser(MsgConnection msgConnection) throws Exception {
+    public void sendToStore(MsgConnection msgConnection) throws Exception {
         rabbitTemplate.setMandatory(true);
         rabbitTemplate.setConfirmCallback(confirmCallback);
         rabbitTemplate.setReturnCallback(returnCallback);

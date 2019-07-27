@@ -7,7 +7,6 @@ package com.meiya.got;
 import com.meiya.got.dao.AdminDAO;
 import com.meiya.got.po.Admin;
 import com.meiya.got.po.MsgConnection;
-import com.meiya.got.sender.FanoutSender;
 import com.meiya.got.util.MD5Util;
 import org.junit.Assert;
 import org.junit.Test;
@@ -23,8 +22,6 @@ public class AdminServiceTests {
 //    @Autowired
 //    private AdminDAO adminDAO;
 
-    @Autowired
-    private FanoutSender fanoutSender;
 //
 //    @Autowired
 //    private MsgConnection msgConnection;

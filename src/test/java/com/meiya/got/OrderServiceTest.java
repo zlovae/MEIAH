@@ -42,18 +42,18 @@ public class OrderServiceTest {
     @Autowired
     private SendTests sendTests;
 
-    @Test
-    public  void test() {
-        MsgConnection msgConnection1 = new MsgConnection(1L, 1, 1, 1L, 1L);
-        MsgConnection msgConnection2 = new MsgConnection(1L, 1, 1, 4L, 1L);
-        MsgConnection msgConnection3 = new MsgConnection(1L, 1, 1, 7L, 1L);
-        try {
-            sendTests.sendToUser(msgConnection1);
-            sendTests.sendToUser(msgConnection2);
-            sendTests.sendToUser(msgConnection3);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+//    @Test
+//    public  void test() {
+//        MsgConnection msgConnection1 = new MsgConnection(1L, 1, 1, 1L, 1L);
+//        MsgConnection msgConnection2 = new MsgConnection(1L, 1, 1, 4L, 1L);
+//        MsgConnection msgConnection3 = new MsgConnection(1L, 1, 1, 7L, 1L);
+//        try {
+//            sendTests.sendToUser(msgConnection1);
+//            sendTests.sendToUser(msgConnection2);
+//            sendTests.sendToUser(msgConnection3);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 }

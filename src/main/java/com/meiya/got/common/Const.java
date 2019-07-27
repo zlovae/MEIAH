@@ -27,8 +27,10 @@ public class Const {
     }
 
     public interface Role{
-        int ROLE_CUSTOMER = 0; //普通用户
-        int ROLE_ADMIN = 1;//管理员
+        int ROLE_ADMIN = 0;//管理员
+        int ROLE_CUSTOMER = 1; //普通用户
+        int ROLE_STORE = 2; //商家
+        int ROLE_STAFF = 3;//职员
     }
 
     public enum ProductStatusEnum{
@@ -94,7 +96,9 @@ public class Const {
 
 
     public enum PayPlatformEnum{
-        ALIPAY(1,"支付宝");
+        NOTPAY(0, "未支付"),
+        ALIPAY(1,"支付宝"),
+        MEIYA(2, "美亚钱包");
 
         PayPlatformEnum(int code,String value){
             this.code = code;

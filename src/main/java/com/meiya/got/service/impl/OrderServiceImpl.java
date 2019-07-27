@@ -18,7 +18,7 @@ import com.meiya.got.common.Const;
 import com.meiya.got.common.ServerResponse;
 import com.meiya.got.dao.*;
 import com.meiya.got.po.*;
-import com.meiya.got.sender.FanoutSender;
+import com.meiya.got.sender.SendTests;
 import com.meiya.got.service.IOrderService;
 import com.meiya.got.util.BigDecimalUtil;
 import com.meiya.got.util.JedisUtil;
@@ -65,8 +65,10 @@ public class OrderServiceImpl implements IOrderService {
     @Autowired
     private OrderItemDAO orderItemDAO;
 
+//    @Autowired
+//    private FanoutSender fanoutSender;
     @Autowired
-    private FanoutSender fanoutSender;
+    private SendTests sendTests;
 
     @Autowired
     private PayInfoDAO payInfoDAO;
@@ -114,7 +116,7 @@ public class OrderServiceImpl implements IOrderService {
     }
 
     @Override
-    public ServerResponse<Order> createOrder(String phone, Long storeId) {
+    public ServerResponse<Order> createOrder(String phone, Long storeId, Integer payMethod) throws Exception {
         ServerResponse response = this.getCartItem(phone, storeId);
 
         if(!response.isSuccess()) {
@@ -148,9 +150,13 @@ public class OrderServiceImpl implements IOrderService {
         System.out.println("删除购物车成功");
         System.out.println(order.getId());
         MsgConnection msgConnection = new MsgConnection(order.getId(), 0, 1, order.getStore_id(), order.getUser_id());
-        fanoutSender.send(msgConnection);
-        return this.payOrder(userId, order.getId());
+        sendTests.sendToStore(msgConnection);
+        switch (payMethod) {
+            case 1 : return this.aliPay(userId, order.getId());
+            //case 2 : return this.meiyaPay(userId, order.getId());
+        }
 
+        return ServerResponse.createByError();
         //返回给前端数据
         //OrderVo orderVo = assembleOrderVo(order, orderItemList);
         //return ServerResponse.createBySuccess(order);
@@ -279,8 +285,7 @@ public class OrderServiceImpl implements IOrderService {
 //        return null;
 //    }
 
-    @Override
-    public ServerResponse payOrder(Long userId, Long orderId) {
+    public ServerResponse aliPay(Long userId, Long orderId) {
 
         //String path = "E:/IdeaProjects/MY-GOT/QRCodeImge";
 
@@ -412,6 +417,10 @@ public class OrderServiceImpl implements IOrderService {
         }
     }
 
+//    public ServerResponse meiyaPay(Long userId, Long orderId) {
+//
+//    }
+
     @Override
     public ServerResponse cancelOrder(Long userId, Long orderId) {
         Order order = orderDAO.selectByOrderNo(orderId);
@@ -458,7 +467,7 @@ public class OrderServiceImpl implements IOrderService {
     }
 
     @Override
-    public ServerResponse orderCallBack(Map<String, String> params) {
+    public ServerResponse orderCallBack(Map<String, String> params) throws Exception {
         //TODO
         Long orderNo = Long.parseLong(params.get("out_trade_no"));
         String tradeNo = params.get("trade_no");
@@ -489,7 +498,7 @@ public class OrderServiceImpl implements IOrderService {
         System.out.println(payInfo);
 
         MsgConnection msgConnection = new MsgConnection(order.getId(), 0, 2, order.getStore_id(), order.getUser_id());
-        fanoutSender.send(msgConnection);
+        sendTests.sendToStore(msgConnection);
         return ServerResponse.createBySuccess();
         //return null;
     }
