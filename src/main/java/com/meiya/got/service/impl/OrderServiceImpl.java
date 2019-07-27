@@ -185,10 +185,10 @@ public class OrderServiceImpl implements IOrderService {
 
         order.setUser_id(userId);
         //发货时间等等
+        order.setCreate_time(new Date());
         //付款时间等等
         int rowCount = orderDAO.insert(order);
         if (rowCount > 0) {
-            //fanoutSender.send(order);
             order.setId(orderNo);
             return order;
         }
@@ -365,7 +365,6 @@ public class OrderServiceImpl implements IOrderService {
                 .setOperatorId(operatorId).setStoreId(storeId).setExtendParams(extendParams)
                 .setTimeoutExpress(timeoutExpress)
                 .setNotifyUrl("http://47.103.118.92:8443/api/order/callback")//支付宝服务器主动通知商户服务器里指定的页面http路径,根据需要设置
-                //
                 .setGoodsDetailList(goodsDetailList);
 
         System.out.println(builder);
@@ -543,6 +542,18 @@ public class OrderServiceImpl implements IOrderService {
             return ServerResponse.createBySuccess(cartList);
         } catch (Exception e) {
             return ServerResponse.createByErrorMessage(e.toString());
+        }
+    }
+
+    @Override
+    public ServerResponse orderCommentStatus(Long orderId, Integer status) {
+        try {
+            Order order = orderDAO.selectByOrderNo(orderId);
+            order.setComment_status(status);
+            orderDAO.updateCommentStatus(order);
+            return ServerResponse.createBySuccess();
+        } catch (Exception e) {
+            return ServerResponse.createByError();
         }
     }
 }

@@ -38,6 +38,8 @@ public interface IOrderService {
 
     ServerResponse orderOneMore(Long orderId);
 
+    ServerResponse orderCommentStatus(Long orderId, Integer status);
+
     /****************************************************商户端**************************************************/
 
 
