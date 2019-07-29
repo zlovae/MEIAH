@@ -125,17 +125,46 @@ public class JedisUtil implements InitializingBean {
         return null;
     }
 
-//    public List<String> sgetall(String key) {
-//        Jedis jedis = null;
-//        try {
-//            //return jedis.s
-//        } catch (Exception e) {
-//            logger.error("发生异常" + e.getMessage());
-//        } finally {
-//            if(jedis!=null) {
-//                jedis.close();
-//            }
-//        }
-//        return null;
-//    }
+    public void sadd(String key, String value) {
+        Jedis jedis = null;
+        try {
+            jedis.sadd(key, value);
+            return;
+        } catch (Exception e) {
+            logger.error("发生异常" + e.getMessage());
+        } finally {
+            if(jedis!=null) {
+                jedis.close();
+            }
+        }
+        return;
+    }
+
+    public Long decr(String key) {
+        Jedis jedis = null;
+        try {
+            return jedis.decr(key);
+        } catch (Exception e) {
+            logger.error("发生异常" + e.getMessage());
+            return -1L;
+        } finally {
+            if(jedis!=null) {
+                jedis.close();
+            }
+        }
+    }
+
+    public boolean sismember(String key, String member) {
+        Jedis jedis = null;
+        try {
+            return jedis.sismember(key, member);
+        } catch (Exception e) {
+            logger.error("发生异常" + e.getMessage());
+            return false;
+        } finally {
+            if(jedis!=null) {
+                jedis.close();
+            }
+        }
+    }
 }

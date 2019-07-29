@@ -9,4 +9,5 @@ import java.util.List;
 public interface FoodDAO extends JpaRepository<Food, Integer> {
     List<Food> getBySid(int sid );
     Food getByName(String name);
+    Food getById(Long id);
 }

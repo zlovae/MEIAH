@@ -15,8 +15,8 @@ public class Food {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
-    private int sid;
+    private Long id;
+    private Long sid;
     private String name;
     private String photo_url;
     private String photo_sub;
@@ -46,7 +46,7 @@ public class Food {
                 '}';
     }
 
-    public Food(int id, int sid, String name, String photo_url, String photo_sub, int cate_id, String describe, Integer stock, BigDecimal price, Integer status, Date create_time, Date update_time) {
+    public Food(Long id, Long sid, String name, String photo_url, String photo_sub, int cate_id, String describe, Integer stock, BigDecimal price, Integer status, Date create_time, Date update_time) {
         this.id = id;
         this.sid = sid;
         this.name = name;
@@ -64,19 +64,19 @@ public class Food {
     public Food() {
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public int getSid() {
+    public Long getSid() {
         return sid;
     }
 
-    public void setSid(int sid) {
+    public void setSid(Long sid) {
         this.sid = sid;
     }
 

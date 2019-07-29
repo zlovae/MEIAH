@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 
@@ -72,6 +73,9 @@ public class OrderServiceImpl implements IOrderService {
 
     @Autowired
     private PayInfoDAO payInfoDAO;
+
+    @Autowired
+    private SeckillDAO seckillDAO;
 
     // 支付宝当面付2.0服务
     private static AlipayTradeService   tradeService;
@@ -555,5 +559,15 @@ public class OrderServiceImpl implements IOrderService {
         } catch (Exception e) {
             return ServerResponse.createByError();
         }
+    }
+    @Transactional
+    public ServerResponse seckill(Long userId, Long foodId) {
+        try {
+            seckillDAO.reduceStock(foodId);
+
+        } catch (Exception e) {
+            return ServerResponse.createByError();
+        }
+        return null;
     }
 }
