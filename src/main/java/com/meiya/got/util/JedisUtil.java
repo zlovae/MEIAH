@@ -128,6 +128,7 @@ public class JedisUtil implements InitializingBean {
     public void sadd(String key, String value) {
         Jedis jedis = null;
         try {
+            jedis = pool.getResource();
             jedis.sadd(key, value);
             return;
         } catch (Exception e) {
@@ -143,6 +144,7 @@ public class JedisUtil implements InitializingBean {
     public Long decr(String key) {
         Jedis jedis = null;
         try {
+            jedis = pool.getResource();
             return jedis.decr(key);
         } catch (Exception e) {
             logger.error("发生异常" + e.getMessage());
@@ -157,6 +159,7 @@ public class JedisUtil implements InitializingBean {
     public boolean sismember(String key, String member) {
         Jedis jedis = null;
         try {
+            jedis = pool.getResource();
             return jedis.sismember(key, member);
         } catch (Exception e) {
             logger.error("发生异常" + e.getMessage());

@@ -4,8 +4,9 @@ import com.google.gson.Gson;
 import com.meiya.got.common.ServerResponse;
 import com.meiya.got.dao.EventsVoDAO;
 import com.meiya.got.dao.FoodDAO;
+import com.meiya.got.dao.FoodsDAO;
 import com.meiya.got.dao.SeckillDAO;
-import com.meiya.got.po.Food;
+import com.meiya.got.po.Foods;
 import com.meiya.got.service.impl.SeckillServiceImpl;
 import com.meiya.got.util.JedisUtil;
 import com.meiya.got.util.RedisKeyUtil;
@@ -32,7 +33,7 @@ import java.util.Map;
 public class SeckillController implements InitializingBean {
 
     //标记商品库存是否为空，减少对redis的访问 K-food_id V-库存
-    Map<Long, Boolean> localStockMap = new HashMap<>();
+    private static Map<Long, Boolean> localStockMap = new HashMap<>();
 
     @Autowired
     private SeckillServiceImpl seckillService;
@@ -47,7 +48,7 @@ public class SeckillController implements InitializingBean {
     private JedisUtil jedisUtil;
 
     @Autowired
-    private FoodDAO foodDAO;
+    private FoodsDAO foodDAO;
 
     /**
      * @function 获取秒杀活动列表
@@ -123,14 +124,16 @@ public class SeckillController implements InitializingBean {
             List<SeckillVo> seckillVoList = seckillDAO.getSeckillFoods(eventId);
             for (SeckillVo seckillVo : seckillVoList) {
 
-                Food food = foodDAO.getById(seckillVo.getId());
+                System.out.println(seckillVo);
+                Foods food = foodDAO.selectById(seckillVo.getId());
+                System.out.println(food);
 
                 SeckillFoodVo seckillFoodVo = new SeckillFoodVo();
 
                 seckillFoodVo.setId(seckillVo.getId());
                 seckillFoodVo.setName(food.getName());
-                seckillFoodVo.setDescribe(food.getDescribe());
-                seckillFoodVo.setPhoto_url(food.getphoto_url());
+                seckillFoodVo.setDescribe(food.getDescription());
+                seckillFoodVo.setPhoto_url(food.getPhoto());
                 seckillFoodVo.setGoods_id(food.getId());
                 seckillFoodVo.setCounts(seckillVo.getCounts());
                 seckillFoodVo.setSid(seckillVo.getSid());
@@ -140,13 +143,17 @@ public class SeckillController implements InitializingBean {
                 seckillFoodVo.setEnd_date(seckillVo.getEnd_date());
                 seckillFoodVo.setStatus(seckillVo.getStatus());
 
+                System.out.println(seckillVo);
                 //缓存库存
                 jedisUtil.sadd(RedisKeyUtil.getSeckillStockKey(seckillVo.getId()), seckillVo.getCounts().toString());
+                System.out.println(seckillVo);
                 Gson gson = new Gson();
                 //缓存Food对象
                 jedisUtil.sadd(RedisKeyUtil.getSeckillGoodVoKey(), gson.toJson(seckillFoodVo));
+                System.out.println(seckillFoodVo);
                 //初始化为未空
                 localStockMap.put(seckillFoodVo.getGoods_id(), false);
+                System.out.println(localStockMap);
             }
         }
     }
