@@ -40,4 +40,7 @@ public interface OrderItemDAO {
     @Select({"select * from my_order_item where order_id=#{order_id}"})
     List<OrderItem> selectItemByOrderId(Long order_id);
 
+    @Insert({"insert into my_order_item (", INSERT_FIELDS, " ) values (#{name}, #{order_id}, #{food_id}, #{photo}, #{price}, #{quantity}, #{discount_id}, #{total_price} )"})
+    int insert(OrderItem orderItem);
+
 }

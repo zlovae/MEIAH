@@ -7,6 +7,9 @@ public class RedisKeyUtil {
     private static String SECKILL_GOOD_VO = "SECKILL_GOOD_VO";//秒杀对象缓存
     private static String SECKILL_GOOD_STOCK = "SECKILL_GOOD_STOCK";//秒杀库存缓存
     private static String SECKILL_ORDER = "SECKILL_ORDER";//秒杀订单缓存
+    private static String SECKILL_PATH = "SECKILL_PATH";
+    private static String SECKILL_VISIT_TIMES = "SECKILL_VISIT_TIMES";
+    //private static String
 
     public static String getCartKey(String phone, Long storeId) {
         return CART + SPILIT + phone + SPILIT + storeId;
@@ -30,6 +33,18 @@ public class RedisKeyUtil {
 
     public static String getSeckillOrderKey() {
         return SECKILL_ORDER;
+    }
+
+    public static String getSeckillPathKey() {
+        return SECKILL_PATH;
+    }
+
+    public static String getSeckillPathField(Long userId, Long skId) {
+        return userId + SPILIT + skId;
+    }
+
+    public static String getSeckillVisitTimesKey(Long userId) {
+        return SECKILL_VISIT_TIMES + SPILIT + userId;
     }
 
 }

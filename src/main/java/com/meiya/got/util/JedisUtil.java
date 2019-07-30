@@ -29,6 +29,21 @@ public class JedisUtil implements InitializingBean {
         pool = new JedisPool("redis://47.103.118.92:6379/10");
     }
 
+    public String set(String key, String value) {
+        Jedis jedis = null;
+        try {
+            jedis = pool.getResource();
+            return jedis.set(key, value);
+        } catch (Exception e) {
+            logger.error("发生异常" + e.getMessage());
+            return "";
+        } finally {
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
+    }
+
     public long hset(String key, String field, String value) {
         Jedis jedis = null;
         try {
@@ -73,6 +88,21 @@ public class JedisUtil implements InitializingBean {
             }
         }
         return 0;
+    }
+
+    public String hget(String key, String field) {
+        Jedis jedis = null;
+        try {
+            jedis = pool.getResource();
+            return jedis.hget(key, field);
+        } catch (Exception e) {
+            logger.error("发生异常" + e.getMessage());
+        } finally {
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
+        return null;
     }
 
     public Map<String, String> delall(String key) {
@@ -161,6 +191,37 @@ public class JedisUtil implements InitializingBean {
         try {
             jedis = pool.getResource();
             return jedis.sismember(key, member);
+        } catch (Exception e) {
+            logger.error("发生异常" + e.getMessage());
+            return false;
+        } finally {
+            if(jedis!=null) {
+                jedis.close();
+            }
+        }
+    }
+
+    //限制访问次数
+    public boolean ratelimit(String key) {
+        Jedis jedis = null;
+        try {
+            jedis = pool.getResource();
+            System.out.println("检测访问频率");
+            long length = jedis.llen(key);
+            if(length < 10) {
+                jedis.lpush(key, jedis.time().toString());
+                return true;
+            } else {
+                Long time = Long.valueOf(jedis.lindex(key, -1L));
+                if((Long.valueOf(jedis.time().toString())-time) < 20) {
+                    logger.info("访问过于频繁，请稍后重试");
+                    return false;
+                } else {
+                    jedis.lpush(key, jedis.time().toString());
+                    jedis.ltrim(key, 0, 9);
+                    return true;
+                }
+            }
         } catch (Exception e) {
             logger.error("发生异常" + e.getMessage());
             return false;

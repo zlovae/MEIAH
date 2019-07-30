@@ -23,6 +23,7 @@ import com.meiya.got.service.IOrderService;
 import com.meiya.got.util.BigDecimalUtil;
 import com.meiya.got.util.JedisUtil;
 import com.meiya.got.util.RedisKeyUtil;
+import com.meiya.got.vo.SeckillVo;
 import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -390,6 +391,7 @@ public class OrderServiceImpl implements IOrderService {
                 //ZxingUtils.getQRCodeImge(response.getQrCode(), 256, filePath);
                 order.setStatus(20);
                 order.setQr_code(response.getQrCode());
+                orderDAO.updateByKey(order);
                 //TODO 二维码存缓存并返回给客户端
                 return ServerResponse.createBySuccess(order);
 
@@ -561,13 +563,42 @@ public class OrderServiceImpl implements IOrderService {
         }
     }
     @Transactional
-    public ServerResponse seckill(Long userId, Long foodId) {
+    public ServerResponse seckill(Long userId, Long skId) {
         try {
-            seckillDAO.reduceStock(foodId);
+            //修改库存
+            seckillDAO.reduceStock(skId);
+            System.out.println("修改库存成功");
+            //生成订单
+            SeckillVo seckillVo = seckillDAO.getByFoodId(skId);
+            Foods food = foodsDAO.selectById(seckillVo.getGoods_id());
+            Long orderNo = this.generateOrderNo();
 
+            OrderItem orderItem = new OrderItem();
+            orderItem.setProduct_id(seckillVo.getSid());
+            orderItem.setName(food.getName());
+            orderItem.setPrice(seckillVo.getSeckill_price());//秒杀价格
+            orderItem.setQuantity(1);
+            orderItem.setTotal(seckillVo.getSeckill_price());
+            orderItem.setPhoto(food.getPhoto());
+            orderItem.setOrder_id(orderNo);
+            orderItemDAO.insert(orderItem);
+            System.out.println(orderItem);
+
+            Order order = new Order();
+            order.setId(orderNo);
+            order.setStore_id(seckillVo.getSid());
+            order.setComment_status(0);
+            order.setPayment(seckillVo.getSeckill_price());
+            order.setCreate_time(new Date());
+            order.setPayment_type(Const.OrderStatusEnum.NO_PAY.getCode());
+            order.setUser_id(userId);
+            orderDAO.insert(order);
+            System.out.println(order);
+
+            System.out.println(userId + "" + orderNo);
+            return this.aliPay(userId, orderNo);
         } catch (Exception e) {
             return ServerResponse.createByError();
         }
-        return null;
     }
 }

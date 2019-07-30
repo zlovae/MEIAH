@@ -18,7 +18,9 @@ public interface SeckillDAO {
     @Select({"select * from my_seckill where events_id=#{events_id}"})
     List<SeckillVo> getSeckillFoods(@Param("events_id") Long events_id);
 
-    @Update({"update my_seckill set counts=counts-1 where foodId=#{foodId} and counts>0"})
-    int reduceStock(Long foodId);
+    @Update({"update my_seckill set counts=counts-1 where id=#{skId} and counts>0"})
+    int reduceStock(Long skId);
 
+    @Select({"select * from my_seckill where id=#{id}"})
+    SeckillVo getByFoodId(@Param("id")Long id);
 }

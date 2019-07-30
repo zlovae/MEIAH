@@ -29,7 +29,7 @@ public class Receiver {
         //Long user_id = msgConnection.getUser_id();
         Long deliverTag = (Long) headers.get(AmqpHeaders.DELIVERY_TAG);
         try {
-            //orderService.seckill()
+            orderService.seckill(userId, foodId);
             channel.basicAck(deliverTag, false);//成功消费
         } catch (Exception e) {
             channel.basicNack(deliverTag, false, true);//返回队列

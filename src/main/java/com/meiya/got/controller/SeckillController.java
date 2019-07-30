@@ -18,11 +18,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +55,7 @@ public class SeckillController implements InitializingBean {
      * */
     @RequestMapping(value = "activities")
     @ResponseBody
-    public ServerResponse SeckillActivities() {
+    public ServerResponse seckillActivities() {
         ServerResponse serverResponse = seckillService.getSeckillEvents();
         if (serverResponse.isSuccess()) {
             return serverResponse;
@@ -72,7 +70,7 @@ public class SeckillController implements InitializingBean {
      * */
     @RequestMapping(value = "foods")
     @ResponseBody
-    public ServerResponse SeckillEvent(@RequestParam("eid")Long eventId) {
+    public ServerResponse seckillEvent(@RequestParam("eid")Long eventId) {
         ServerResponse serverResponse = seckillService.getSeckillGoods(eventId);
         if (serverResponse.isSuccess()) {
             return serverResponse;
@@ -81,15 +79,39 @@ public class SeckillController implements InitializingBean {
     }
 
     /**
+     * @function 获取当前用户对应食品的专属秒杀地址
+     * @return List<Seckill>
+     * @param userId
+     * @param seckFoodId
+     * */
+    @RequestMapping(value = "getpath")
+    @ResponseBody
+    public ServerResponse SeckillEvent(@RequestParam("uid")Long userId, @RequestParam("skid")Long seckFoodId) {
+        return seckillService.createSeckillPath(userId, seckFoodId);
+    }
+
+    /**
      * @function 执行秒杀
      * @return List<Seckill>
      * @param userId
      * @param secFoodId 菜品id,对应food表中的id
      * */
-    @RequestMapping(value = "dosec")
+    @RequestMapping(value = "{path}/dosec")
     @ResponseBody
-    public ServerResponse doSeckill(@RequestParam("uid")Long userId, @RequestParam("skid")Long secFoodId) {
-        //0.未登录跳转
+    public ServerResponse doSeckill(@RequestParam("uid")Long userId, @RequestParam("skid")Long secFoodId, @PathVariable("path")String path) {
+
+        System.out.println(userId +" " + secFoodId + " " + path);
+        //0.检测路径是否正确
+        String check = jedisUtil.hget(RedisKeyUtil.getSeckillPathKey(), RedisKeyUtil.getSeckillPathField(userId, secFoodId));
+        System.out.println(check);
+        if(!check.equals(path)) {
+            return ServerResponse.createByErrorMessage("非法访问");
+        }
+
+        //0.判断是否频繁请求
+        if(!jedisUtil.ratelimit(RedisKeyUtil.getSeckillVisitTimesKey(userId))) {
+            return ServerResponse.createByErrorMessage("访问过于频繁，请稍后重试");
+        }
 
         //1.检测商品是否还有库存，有则进行下一步，没有则返回结束消息
         boolean over = localStockMap.get(secFoodId);
@@ -118,6 +140,7 @@ public class SeckillController implements InitializingBean {
         String eventKey = RedisKeyUtil.getSeckillEventKey();
         for(EventsVo eventsVo : eventsVoList) {
             Long eventId = eventsVo.getId();
+            //活动id存在set里
             jedisUtil.sadd(eventKey, eventId.toString());
 
             //将活动商品缓存
@@ -145,7 +168,7 @@ public class SeckillController implements InitializingBean {
 
                 System.out.println(seckillVo);
                 //缓存库存
-                jedisUtil.sadd(RedisKeyUtil.getSeckillStockKey(seckillVo.getId()), seckillVo.getCounts().toString());
+                jedisUtil.set(RedisKeyUtil.getSeckillStockKey(seckillVo.getId()), seckillVo.getCounts().toString());
                 System.out.println(seckillVo);
                 Gson gson = new Gson();
                 //缓存Food对象

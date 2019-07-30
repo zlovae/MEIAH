@@ -26,7 +26,7 @@ public interface OrderDAO {
                     "#{end_time}, #{close_time}, #{create_time}, #{update_time}, #{note}, #{address}, #{comment_status})"})
     int insert(Order order);
 
-    @Update({"update my_order set status=#{status} where id=#{id}"})
+    @Update({"update my_order set status=#{status}, qr_code=#{qr_code} where id=#{id}"})
     int updateByKey(Order order);
 
     @Select({"select * from my_order where (id=#{order_id} and user_id=#{user_id} )"})
