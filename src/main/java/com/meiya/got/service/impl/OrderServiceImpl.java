@@ -269,8 +269,6 @@ public class OrderServiceImpl implements IOrderService {
                 orderItem.setPrice(food.getPrice());
                 orderItem.setQuantity(cart.getQuantity());
                 orderItem.setTotal(food.getPrice().multiply(new BigDecimal(cart.getQuantity())));
-//                orderItem.setCreat_time(new java.util.Date());
-//                orderItem.setUpdate_time(new java.util.Date());
                 orderItemList.add(orderItem);
             }
             return ServerResponse.createBySuccess(orderItemList);
@@ -496,8 +494,11 @@ public class OrderServiceImpl implements IOrderService {
         payInfo.setUser_id(order.getUser_id());
         payInfo.setOrder_id(order.getId());
         payInfo.setPlatform(Const.PayPlatformEnum.ALIPAY.getCode());
+        payInfo.setCreat_time(new Date());
+        payInfo.setUpdate_time(new Date());
+        payInfo.setStore_id(order.getStore_id());
         payInfo.setSerial_number(tradeNo);
-        payInfo.setStatus(tradeStatus);
+        payInfo.setStatus(Const.OrderStatusEnum.PAID.getValue());
 
         payInfoDAO.insert(payInfo);
         System.out.println(payInfo);

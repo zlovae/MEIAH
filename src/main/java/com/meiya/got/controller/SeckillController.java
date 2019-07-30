@@ -119,14 +119,20 @@ public class SeckillController implements InitializingBean {
             return ServerResponse.createByErrorMessage("秒杀结束");
 
         //2.检测用户是否已对对应商品进行了秒杀，有则转到付款页面，没有则进行下一步
-        String key = RedisKeyUtil.getSeckillOrderKey();
-        String value = userId + "" + secFoodId;
-        boolean ordered = jedisUtil.sismember(key, value);
+        boolean ordered = jedisUtil.sismember(RedisKeyUtil.getSeckillOrderKey(), RedisKeyUtil.getSeckillOrderValue(userId, secFoodId));
         if(ordered) {
             return ServerResponse.createByErrorMessage("您已秒杀过该商品");
         }
 
-        //3.进行秒杀
+        //1.redis预减库存
+        String key = RedisKeyUtil.getSeckillStockKey(secFoodId);
+        Long stock = jedisUtil.decr(key);
+        if(stock < 0) {
+            localStockMap.put(secFoodId, true);
+            return ServerResponse.createByErrorMessage("秒杀已结束");
+        }
+
+        //3.进行秒杀，进入消息队列等待
         return seckillService.doSeckill(userId, secFoodId);
     }
 
@@ -175,7 +181,7 @@ public class SeckillController implements InitializingBean {
                 jedisUtil.sadd(RedisKeyUtil.getSeckillGoodVoKey(), gson.toJson(seckillFoodVo));
                 System.out.println(seckillFoodVo);
                 //初始化为未空
-                localStockMap.put(seckillFoodVo.getGoods_id(), false);
+                localStockMap.put(seckillFoodVo.getId(), false);
                 System.out.println(localStockMap);
             }
         }

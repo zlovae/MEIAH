@@ -58,13 +58,6 @@ public class SeckillServiceImpl implements ISeckillService {
     @Transactional
     public ServerResponse doSeckill(Long userId, Long skId) {
         try {
-            //1.redis预减库存
-            String key = RedisKeyUtil.getSeckillStockKey(skId);
-            Long stock = jedisUtil.decr(key);
-            if(stock < 0) {
-                return ServerResponse.createByErrorMessage("秒杀已结束");
-            }
-
             System.out.println("开始秒杀。。。");
             SeckillMessage seckillMessage = new SeckillMessage();
             seckillMessage.setUserId(userId);

@@ -42,6 +42,9 @@ public class ReceiverController {
             case 3 :
                 userMap.put(uid, 0);
                 return ServerResponse.createBySuccessMessage("卖家已退款");
+            case 4 :
+                userMap.put(uid, 0);
+                return ServerResponse.createBySuccessMessage("商家接单");
         }
         return ServerResponse.createByError();
     }
@@ -56,12 +59,12 @@ public class ReceiverController {
 
     @RabbitHandler
     public void receiver(@Payload MsgConnection msgConnection, Channel channel, @Headers Map<String, Object> headers) throws IOException {
-        System.out.println(msgConnection);
+        //System.out.println(msgConnection);
         Long user_id = msgConnection.getUser_id();
         Long deliverTag = (Long) headers.get(AmqpHeaders.DELIVERY_TAG);
         if(!userMap.containsKey(user_id)) {
             channel.basicNack(deliverTag, false, true);
-            System.out.println("返回队列");
+            //System.out.println("返回队列");
             return;
         }
 
@@ -71,6 +74,7 @@ public class ReceiverController {
             case 1 : userMap.put(user_id, 1); break;
             case 2 : userMap.put(user_id, 2); break;
             case 3 : userMap.put(user_id, 3); break;
+            case 4 : userMap.put(user_id, 4); break;
             default: break;
         }
     }

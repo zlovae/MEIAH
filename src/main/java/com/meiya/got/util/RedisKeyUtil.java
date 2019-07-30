@@ -35,6 +35,10 @@ public class RedisKeyUtil {
         return SECKILL_ORDER;
     }
 
+    public static String getSeckillOrderValue(Long userId, Long skFoodId) {
+        return userId + SPILIT + skFoodId;
+    }
+
     public static String getSeckillPathKey() {
         return SECKILL_PATH;
     }

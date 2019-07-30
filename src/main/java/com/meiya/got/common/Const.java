@@ -58,7 +58,8 @@ public class Const {
         SHIPPED(2,"已发货"),
         ORDER_SUCCESS(3,"交易成功"),
         CANCELED(4,"订单取消"),
-        ORDER_CLOSE(5,"订单关闭");
+        ORDER_CLOSE(5,"订单关闭"),
+        ORDER_AC(6, "商家接单");
 
 
         OrderStatusEnum(int code,String value){
