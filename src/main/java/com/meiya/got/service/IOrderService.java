@@ -20,7 +20,7 @@ public interface IOrderService {
     //根据购物车中勾选的菜品
     //ServerResponse getCartItem(Long userId, Long storeId);
     //生成订单
-    ServerResponse<Order> createOrder(String phone, Long storeId, Integer payMethod) throws Exception;
+    ServerResponse<Order> createOrder(String phone, Long storeId) throws Exception;
     //确认订单
     //ServerResponse<Order> confirmOrder(Long userId, Long orderId);
     //付款
@@ -39,6 +39,8 @@ public interface IOrderService {
     ServerResponse orderOneMore(Long orderId);
 
     ServerResponse orderCommentStatus(Long orderId, Integer status);
+
+    ServerResponse pickOneStore(Long userId);
 
     /****************************************************商户端**************************************************/
 

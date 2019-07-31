@@ -136,6 +136,19 @@ public class SeckillController implements InitializingBean {
         return seckillService.doSeckill(userId, secFoodId);
     }
 
+    /**
+     * @function 转到账单页面支付
+     * @return List<Seckill>
+     * @param userId
+     * @param seckFoodId
+     * */
+    @RequestMapping(value = "pay")
+    @ResponseBody
+    public ServerResponse paySeckill(@RequestParam("uid")Long userId, @RequestParam("skid")Long seckFoodId) {
+        //return seckillService.
+        return null;
+    }
+
     /**@fuction 初始化，将秒杀的商品加载到缓存
      * @return
      * @param

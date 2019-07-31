@@ -7,6 +7,7 @@ import com.google.common.collect.Maps;
 import com.meiya.got.common.Const;
 import com.meiya.got.common.ResponseCode;
 import com.meiya.got.common.ServerResponse;
+import com.meiya.got.dao.OrderDAO;
 import com.meiya.got.po.Order;
 import com.meiya.got.po.PayInfo;
 import com.meiya.got.po.User;
@@ -40,6 +41,9 @@ public class OrderController {
     @Autowired
     private UserServiceImpl iUserService;
 
+    @Autowired
+    private OrderDAO orderDAO;
+
     /**@function 修改购物车
      * @return success/error
      * @param phone
@@ -49,21 +53,22 @@ public class OrderController {
      * */
     @PostMapping("cart")
     @ResponseBody
-    public ServerResponse setCart(@RequestParam("phone")String phone ,@RequestParam("sid")Long storeid,@RequestParam("fid")Long foodid,@RequestParam("num")Integer quantity) {
+    public ServerResponse setCart(@RequestParam("phone")String phone ,
+                                  @RequestParam("sid")Long storeid,
+                                  @RequestParam("fid")Long foodid,
+                                  @RequestParam("num")Integer quantity) {
         return iOrderService.setCart(phone, storeid, foodid, quantity);
     }
 
     /**@function 提交购物车并转到支付页面
-     * TODO : 多种支付方式
      * @return Order
      * @param phone
      * @param storeId
-     * @param payMethod
      * */
     @PutMapping("order")
     @ResponseBody
-    public ServerResponse createOrder(@RequestParam("phone")String phone, @RequestParam("sid")Long storeId, @RequestParam("mid")Integer payMethod) throws Exception {
-        return iOrderService.createOrder(phone, storeId, payMethod);
+    public ServerResponse createOrder(@RequestParam("phone")String phone, @RequestParam("sid")Long storeId) throws Exception {
+        return iOrderService.createOrder(phone, storeId);
     }
 
     @RequestMapping("/cancel")
@@ -89,16 +94,30 @@ public class OrderController {
         }
     }
 
-//    @RequestMapping("/pay")
-//    @ResponseBody
-//    public ServerResponse payOrder(@RequestParam("order_id") Long orderId, HttpSession httpSession) {
-//        User user = (User) httpSession.getAttribute(Const.CURRENT_USER);
-//        if(user==null) {
-//            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), ResponseCode.NEED_LOGIN.getDesc());
-//        } else {
-//            return iOrderService.payOrder(user.getId(), orderId);
-//        }
-//    }
+    /**@function 转到支付页面
+     * @return order(付款码)
+     * @param orderId
+     * @param address
+     * @param notes
+     * */
+    @RequestMapping("order/pay")
+    @ResponseBody
+    public ServerResponse payOrder(@RequestParam("order_id") Long orderId,
+                                   @RequestParam("address")String address,
+                                   @RequestParam("notes")String notes,
+                                   HttpSession httpSession) {
+        Integer mid=1;
+        Order order = orderDAO.selectByOrderNo(orderId);
+        order.setAddress(address);
+        order.setNote(notes);
+        orderDAO.updateByKey(order);
+        switch (mid) {
+            case 1 :
+                return iOrderService.aliPay(order.getUser_id(), orderId);
+            default :
+                return ServerResponse.createByErrorMessage("不支持的支付方式");
+        }
+    }
 
     @RequestMapping("order/callback")
     @ResponseBody
@@ -178,6 +197,21 @@ public class OrderController {
     @ResponseBody
     public ServerResponse orderOneMore(@RequestParam("oid") Long oid) {
         ServerResponse serverResponse = iOrderService.orderOneMore(oid);
+        if (serverResponse.isSuccess()) {
+            return serverResponse;
+        }
+        return ServerResponse.createByError();
+    }
+
+    /**
+     * @function 获取当前用户点的最多菜的菜系的所有商家
+     * @return List<OrderItem>;
+     * @param userId
+     * */
+    @RequestMapping("order/pickstore")
+    @ResponseBody
+    public ServerResponse pickOneStore(@RequestParam("uid") Long userId) {
+        ServerResponse serverResponse = iOrderService.pickOneStore(userId);
         if (serverResponse.isSuccess()) {
             return serverResponse;
         }

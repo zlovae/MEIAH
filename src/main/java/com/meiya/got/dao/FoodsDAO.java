@@ -13,7 +13,7 @@ public interface FoodsDAO {
     String SELECT_FIELDS = "id, sid, name, photo, photo_sub, cate_id, description, stock, price, status, create_time";
 
 
-    @Select({"select * from my_foods where id = #{id}"})
+    @Select({"select * from my_foods where id=#{id}"})
     @Results(id = "FoodsMap", value = {
             @Result(column = "name", property = "name", javaType = String.class),
             @Result(column = "photo", property = "photo", javaType = String.class),
@@ -25,7 +25,7 @@ public interface FoodsDAO {
             @Result(column = "status", property = "status", javaType = Integer.class),
             //@Result(column = "create_time", property = "create_time", javaType = java.util.Date.class)
     })
-    Foods selectById(@Param("id") Long id);
+    Foods selectById(@Param("id")Long id);
 
     @Select({"select * from my_foods where sid = #{storeId}"})
     List<Foods> selectByStore(@Param("storeId") Long storeId);

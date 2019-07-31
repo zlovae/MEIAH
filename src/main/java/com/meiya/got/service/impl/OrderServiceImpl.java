@@ -78,6 +78,9 @@ public class OrderServiceImpl implements IOrderService {
     @Autowired
     private SeckillDAO seckillDAO;
 
+    @Autowired
+    private StoresDAO storesDAO;
+
     // 支付宝当面付2.0服务
     private static AlipayTradeService   tradeService;
 
@@ -121,50 +124,46 @@ public class OrderServiceImpl implements IOrderService {
     }
 
     @Override
-    public ServerResponse<Order> createOrder(String phone, Long storeId, Integer payMethod) throws Exception {
-        ServerResponse response = this.getCartItem(phone, storeId);
+    public ServerResponse<Order> createOrder(String phone, Long storeId) throws Exception {
+        try{
+            ServerResponse response = this.getCartItem(phone, storeId);
 
-        if(!response.isSuccess()) {
-            return response;
-        }
+            if(!response.isSuccess()) {
+                return response;
+            }
 
-        List<OrderItem> orderItemList = (List<OrderItem>) response.getData();
-        System.out.println(orderItemList);
-        BigDecimal payment = this.getOrderTotalPrice(orderItemList);
+            List<OrderItem> orderItemList = (List<OrderItem>) response.getData();
+            System.out.println(orderItemList);
+            BigDecimal payment = this.getOrderTotalPrice(orderItemList);
 
-        //生成订单
-        Long userId = userDAO.getByPhone(phone).getId();
-        Order order = this.assembleOrder(userId, storeId, payment);
-        if (order == null) {
-            return ServerResponse.createByErrorMessage("生成订单错误");
+            //生成订单
+            Long userId = userDAO.getByPhone(phone).getId();
+            Order order = this.assembleOrder(userId, storeId, payment);
+            if (order == null) {
+                return ServerResponse.createByErrorMessage("生成订单错误");
+            }
+            if (CollectionUtils.isEmpty(orderItemList)) {
+                return ServerResponse.createByErrorMessage("购物车为空");
+            }
+            for (OrderItem orderItem : orderItemList) {
+                orderItem.setOrder_id(order.getId());
+            }
+            //mybatis 批量插入
+            orderItemDAO.batchInsert(orderItemList);
+            System.out.println(orderItemList);
+            //生成成功,我们要减少我们产品的库存
+            this.reduceProductStock(orderItemList);
+            System.out.println("减去库存成功");
+            /********************因为测试时候不想一直添加购物车就注释掉了***************/
+            jedisUtil.delall(RedisKeyUtil.getCartKey(phone, storeId));
+            System.out.println("删除购物车成功");
+            System.out.println(order.getId());
+            MsgConnection msgConnection = new MsgConnection(order.getId(), 0, 1, order.getStore_id(), order.getUser_id());
+            sendTests.sendToStore(msgConnection);
+            return ServerResponse.createBySuccess(order);
+        } catch (Exception e) {
+            return ServerResponse.createByErrorMessage(e.toString());
         }
-        if (CollectionUtils.isEmpty(orderItemList)) {
-            return ServerResponse.createByErrorMessage("购物车为空");
-        }
-        for (OrderItem orderItem : orderItemList) {
-            orderItem.setOrder_id(order.getId());
-        }
-        //mybatis 批量插入
-        orderItemDAO.batchInsert(orderItemList);
-        System.out.println(orderItemList);
-        //生成成功,我们要减少我们产品的库存
-        this.reduceProductStock(orderItemList);
-        System.out.println("减去库存成功");
-        /********************因为测试时候不想一直添加购物车就注释掉了***************/
-        jedisUtil.delall(RedisKeyUtil.getCartKey(phone, storeId));
-        System.out.println("删除购物车成功");
-        System.out.println(order.getId());
-        MsgConnection msgConnection = new MsgConnection(order.getId(), 0, 1, order.getStore_id(), order.getUser_id());
-        sendTests.sendToStore(msgConnection);
-        switch (payMethod) {
-            case 1 : return this.aliPay(userId, order.getId());
-            //case 2 : return this.meiyaPay(userId, order.getId());
-        }
-
-        return ServerResponse.createByError();
-        //返回给前端数据
-        //OrderVo orderVo = assembleOrderVo(order, orderItemList);
-        //return ServerResponse.createBySuccess(order);
     }
 
     private void reduceProductStock(List<OrderItem> orderItemList) {
@@ -486,6 +485,9 @@ public class OrderServiceImpl implements IOrderService {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             //order.setPayment_time(sdf.parse(params.get("gmt_payment")));
             order.setStatus(Const.OrderStatusEnum.PAID.getCode());
+            order.setPayment_type(Const.PaymentTypeEnum.ONLINE_PAY.getCode());
+            order.setPayment_time(new Date());
+            order.setUpdate_time(new Date());
             orderDAO.updateByKey(order);
             //orderMapper.updateByPrimaryKeySelective(order);
         }
@@ -601,5 +603,16 @@ public class OrderServiceImpl implements IOrderService {
         } catch (Exception e) {
             return ServerResponse.createByError();
         }
+    }
+
+    @Override
+    public ServerResponse pickOneStore(Long userId) {
+        try{
+            List<Store> storeList = storesDAO.pickOneStore(userId);
+            return ServerResponse.createBySuccess(storeList);
+        }catch (Exception e) {
+            return ServerResponse.createByErrorMessage("获取商家失败");
+        }
+        //return null;
     }
 }
