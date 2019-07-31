@@ -59,6 +59,36 @@ public class JedisUtil implements InitializingBean {
         }
     }
 
+    public Long lpush(String key, String value) {
+        Jedis jedis = null;
+        try {
+            jedis = pool.getResource();
+            return jedis.lpush(key, value);
+        } catch (Exception e) {
+            logger.error("发生异常" + e.getMessage());
+            return null;
+        } finally {
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
+    }
+
+    public String rpop(String key) {
+        Jedis jedis = null;
+        try {
+            jedis = pool.getResource();
+            return jedis.rpop(key);
+        } catch (Exception e) {
+            logger.error("发生异常" + e.getMessage());
+            return null;
+        } finally {
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
+    }
+
     public String set(String key, String value) {
         Jedis jedis = null;
         try {
@@ -135,6 +165,36 @@ public class JedisUtil implements InitializingBean {
         return null;
     }
 
+    public Long hdel(String key, String field) {
+        Jedis jedis = null;
+        try {
+            jedis = pool.getResource();
+            return jedis.hdel(key, field);
+        } catch (Exception e) {
+            logger.error("发生异常" + e.getMessage());
+        } finally {
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
+        return null;
+    }
+
+    public Map<String, String> hgetall(String key) {
+        Jedis jedis = null;
+        try {
+            jedis = pool.getResource();
+            return jedis.hgetAll(key);
+        } catch (Exception e) {
+            logger.error("发生异常" + e.getMessage());
+        } finally {
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
+        return null;
+    }
+
     public Map<String, String> delall(String key) {
         Jedis jedis = null;
         try {
@@ -171,10 +231,11 @@ public class JedisUtil implements InitializingBean {
         }
     }
 
-    public List<String> sgetall(String key) {
+    public Set<String> sgetall(String key) {
         Jedis jedis = null;
         try {
-            //return jedis.s
+            jedis = pool.getResource();
+            return jedis.smembers(key);
         } catch (Exception e) {
             logger.error("发生异常" + e.getMessage());
         } finally {

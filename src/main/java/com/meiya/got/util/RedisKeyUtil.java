@@ -37,8 +37,8 @@ public class RedisKeyUtil {
         return SECKILL_GOOD_STOCK + SPILIT + goodId;
     }
 
-    public static String getSeckillGoodVoKey() {
-        return SECKILL_GOOD_VO;
+    public static String getSeckillGoodVoKey(Long eventId) {
+        return SECKILL_GOOD_VO + eventId;
     }
 
     public static String getSeckillOrderKey() {

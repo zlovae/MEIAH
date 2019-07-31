@@ -21,9 +21,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @CrossOrigin
 @Controller
@@ -71,11 +69,26 @@ public class SeckillController implements InitializingBean {
     @RequestMapping(value = "foods")
     @ResponseBody
     public ServerResponse seckillEvent(@RequestParam("eid")Long eventId) {
-        ServerResponse serverResponse = seckillService.getSeckillGoods(eventId);
-        if (serverResponse.isSuccess()) {
-            return serverResponse;
+        Gson gson=new Gson();
+        //ServerResponse serverResponse = seckillService.getSeckillGoods(eventId);
+        Map<String, String> map = jedisUtil.hgetall(RedisKeyUtil.getSeckillGoodVoKey(eventId));
+        List<SeckillFoodVo> seckillVoList=new ArrayList<>();
+        for(String s : map.values()) {
+            SeckillFoodVo seckillFoodVo = gson.fromJson(s, SeckillFoodVo.class);
+            seckillFoodVo.setCounts(Integer.valueOf(jedisUtil.get(RedisKeyUtil.getSeckillStockKey(seckillFoodVo.getId()))));
+            seckillVoList.add(seckillFoodVo);
         }
-        return ServerResponse.createByError();
+        return ServerResponse.createBySuccess(seckillVoList);
+//        System.out.println(strings);
+//        List<SeckillVo> seckillVoList=new ArrayList<>();
+//        for(String s : strings) {
+//            SeckillVo seckillVo = gson.fromJson(s, SeckillVo.class);
+//            System.out.println(seckillVo);
+//        }
+//        if (serverResponse.isSuccess()) {
+//            return serverResponse;
+//        }
+//        return ServerResponse.createByError();
     }
 
     /**
@@ -98,7 +111,7 @@ public class SeckillController implements InitializingBean {
      * */
     @RequestMapping(value = "{path}/dosec")
     @ResponseBody
-    public ServerResponse doSeckill(@RequestParam("uid")Long userId, @RequestParam("skid")Long secFoodId, @PathVariable("path")String path) {
+    public ServerResponse doSeckill(@RequestParam("uid")Long userId,@RequestParam("eid")Long eventId, @RequestParam("skid")Long secFoodId, @PathVariable("path")String path) {
 
         System.out.println(userId +" " + secFoodId + " " + path);
         //0.检测路径是否正确
@@ -129,6 +142,7 @@ public class SeckillController implements InitializingBean {
         Long stock = jedisUtil.decr(key);
         if(stock < 0) {
             localStockMap.put(secFoodId, true);
+            jedisUtil.hdel(RedisKeyUtil.getSeckillGoodVoKey(eventId), secFoodId.toString());
             return ServerResponse.createByErrorMessage("秒杀已结束");
         }
 
@@ -177,7 +191,7 @@ public class SeckillController implements InitializingBean {
                 seckillFoodVo.setDescribe(food.getDescription());
                 seckillFoodVo.setPhoto_url(food.getPhoto());
                 seckillFoodVo.setGoods_id(food.getId());
-                seckillFoodVo.setCounts(seckillVo.getCounts());
+                //seckillFoodVo.setCounts(seckillVo.getCounts());
                 seckillFoodVo.setSid(seckillVo.getSid());
                 seckillFoodVo.setSeckill_price(seckillVo.getSeckill_price());
                 seckillFoodVo.setStart_date(seckillVo.getStart_date());
@@ -191,7 +205,7 @@ public class SeckillController implements InitializingBean {
                 System.out.println(seckillVo);
                 Gson gson = new Gson();
                 //缓存Food对象
-                jedisUtil.sadd(RedisKeyUtil.getSeckillGoodVoKey(), gson.toJson(seckillFoodVo));
+                jedisUtil.hset(RedisKeyUtil.getSeckillGoodVoKey(eventId), seckillVo.getId().toString(), gson.toJson(seckillFoodVo));
                 System.out.println(seckillFoodVo);
                 //初始化为未空
                 localStockMap.put(seckillFoodVo.getId(), false);
