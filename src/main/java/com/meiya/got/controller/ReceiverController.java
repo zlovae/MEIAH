@@ -29,7 +29,7 @@ public class ReceiverController {
         if(!userMap.containsKey(uid)) {
             userMap.put(uid, 0);
         }
-        System.out.println("-----------------------------------" + uid + userMap.get(uid));
+        //System.out.println("-----------------------------------" + uid + userMap.get(uid));
         switch (userMap.get(uid)) {
             case 0 :
                 return ServerResponse.createByError();

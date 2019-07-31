@@ -505,20 +505,21 @@ public class OrderServiceImpl implements IOrderService {
         payInfoDAO.insert(payInfo);
         System.out.println(payInfo);
 
-        MsgConnection msgConnection = new MsgConnection(order.getId(), 0, 2, order.getStore_id(), order.getUser_id());
-        sendTests.sendToStore(msgConnection);
         return ServerResponse.createBySuccess();
         //return null;
     }
 
     @Override
-    public ServerResponse orderStatus(Long userId, Long orderId) {
+    public ServerResponse orderStatus(Long userId, Long orderId) throws Exception {
         //TODO
         Order order = orderDAO.selectByUserIdAndOrderNo(userId, orderId);
         if (order == null) {
             return ServerResponse.createByErrorMessage("用户没有该订单");
         }
         if (order.getStatus() >= Const.OrderStatusEnum.PAID.getCode()) {
+
+            MsgConnection msgConnection = new MsgConnection(order.getId(), 0, 2, order.getStore_id(), order.getUser_id());
+            sendTests.sendToStore(msgConnection);
             return ServerResponse.createBySuccess();
         }
         return ServerResponse.createByError();

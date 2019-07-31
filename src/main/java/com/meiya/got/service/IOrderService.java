@@ -34,7 +34,7 @@ public interface IOrderService {
     //支付宝回调
     ServerResponse orderCallBack(Map<String, String> params) throws Exception;
     //查看订单状态
-    ServerResponse orderStatus(Long userId, Long orderId);
+    ServerResponse orderStatus(Long userId, Long orderId) throws Exception;
 
     ServerResponse orderOneMore(Long orderId);
 

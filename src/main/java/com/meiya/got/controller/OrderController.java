@@ -160,7 +160,7 @@ public class OrderController {
 
     @RequestMapping("status")
     @ResponseBody
-    public int queryOrderPayStatus(@RequestParam("uid") Long uid, @RequestParam("oid") Long oid) {
+    public int queryOrderPayStatus(@RequestParam("uid") Long uid, @RequestParam("oid") Long oid) throws Exception {
         ServerResponse serverResponse = iOrderService.orderStatus(uid, oid);
         if (serverResponse.isSuccess()) {
             return 1;
