@@ -2,9 +2,12 @@ package com.meiya.got.controller;
 
 import com.meiya.got.common.ServerResponse;
 import com.meiya.got.po.MsgConnection;
+import com.meiya.got.util.JedisUtil;
+import com.meiya.got.util.RedisKeyUtil;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.support.AmqpHeaders;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Controller;
@@ -22,6 +25,9 @@ import java.util.Map;
 public class ReceiverController {
 
     private static Map<Long, Integer> userMap = new HashMap<>();
+
+    @Autowired
+    JedisUtil jedisUtil;
 
     @RequestMapping("get")
     @ResponseBody
@@ -55,6 +61,7 @@ public class ReceiverController {
         if(userMap.containsKey(uid)) {
             userMap.remove(uid);
         }
+        jedisUtil.decr(RedisKeyUtil.getOnlineUserKey());
     }
 
     @RabbitHandler

@@ -9,7 +9,17 @@ public class RedisKeyUtil {
     private static String SECKILL_ORDER = "SECKILL_ORDER";//秒杀订单缓存
     private static String SECKILL_PATH = "SECKILL_PATH";
     private static String SECKILL_VISIT_TIMES = "SECKILL_VISIT_TIMES";
+    private static String ONLINE_USER = "ONLINE_USER";
+    private static String ONLINE_STORE = "ONLINE_STORE";
     //private static String
+
+    public static String getOnlineUserKey() {
+        return ONLINE_USER;
+    }
+
+    public static String getOnlineStoreKey() {
+        return ONLINE_STORE;
+    }
 
     public static String getCartKey(String phone, Long storeId) {
         return CART + SPILIT + phone + SPILIT + storeId;

@@ -29,6 +29,36 @@ public class JedisUtil implements InitializingBean {
         pool = new JedisPool("redis://47.103.118.92:6379/10");
     }
 
+    public Long incr(String key) {
+        Jedis jedis = null;
+        try {
+            jedis = pool.getResource();
+            return jedis.incr(key);
+        } catch (Exception e) {
+            logger.error("发生异常" + e.getMessage());
+            return 0L;
+        } finally {
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
+    }
+
+    public String get(String key) {
+        Jedis jedis = null;
+        try {
+            jedis = pool.getResource();
+            return jedis.get(key);
+        } catch (Exception e) {
+            logger.error("发生异常" + e.getMessage());
+            return null;
+        } finally {
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
+    }
+
     public String set(String key, String value) {
         Jedis jedis = null;
         try {

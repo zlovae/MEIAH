@@ -10,6 +10,8 @@ import com.meiya.got.service.IStoreService;
 import com.meiya.got.service.IUserService;
 import com.meiya.got.service.impl.AddressServiceImpl;
 import com.meiya.got.service.impl.UserServiceImpl;
+import com.meiya.got.util.JedisUtil;
+import com.meiya.got.util.RedisKeyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +31,9 @@ public class LoginController {
     @Autowired
     AddressServiceImpl addressService;
 
+    @Autowired
+    JedisUtil jedisUtil;
+
     @CrossOrigin
     @PostMapping(value = "/api/login")
     @ResponseBody
@@ -46,6 +51,7 @@ public class LoginController {
             System.out.println(user.toString());
             HashMap<String, Object> result = new HashMap<String, Object>();
             List<Address> addresses = addressService.getByUid(user.getId());
+            jedisUtil.incr(RedisKeyUtil.getOnlineUserKey());
             result.put("user", user);
             result.put("addresses", addresses);
             return result;
