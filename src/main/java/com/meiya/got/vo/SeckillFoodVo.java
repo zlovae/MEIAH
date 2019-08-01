@@ -11,7 +11,7 @@ public class SeckillFoodVo implements Serializable {
     private Long goods_id;
     private String name;
     private String photo_url;
-    private String describe;
+    private String description;
     private BigDecimal seckill_price;
     private Date start_date;
     private Date end_date;
@@ -23,12 +23,12 @@ public class SeckillFoodVo implements Serializable {
     public SeckillFoodVo() {
     }
 
-    public SeckillFoodVo(Long id, Long goods_id, String name, String photo_url, String describe, BigDecimal seckill_price, Date start_date, Date end_date, Long sid, Long events_id, Integer status, Integer counts) {
+    public SeckillFoodVo(Long id, Long goods_id, String name, String photo_url, String description, BigDecimal seckill_price, Date start_date, Date end_date, Long sid, Long events_id, Integer status, Integer counts) {
         this.id = id;
         this.goods_id = goods_id;
         this.name = name;
         this.photo_url = photo_url;
-        this.describe = describe;
+        this.description = description;
         this.seckill_price = seckill_price;
         this.start_date = start_date;
         this.end_date = end_date;
@@ -70,12 +70,12 @@ public class SeckillFoodVo implements Serializable {
         this.photo_url = photo_url;
     }
 
-    public String getDescribe() {
-        return describe;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDescribe(String describe) {
-        this.describe = describe;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public BigDecimal getSeckill_price() {
@@ -141,7 +141,7 @@ public class SeckillFoodVo implements Serializable {
                 ", goods_id=" + goods_id +
                 ", name='" + name + '\'' +
                 ", photo_url='" + photo_url + '\'' +
-                ", describe='" + describe + '\'' +
+                ", description='" + description + '\'' +
                 ", seckill_price=" + seckill_price +
                 ", start_date=" + start_date +
                 ", end_date=" + end_date +

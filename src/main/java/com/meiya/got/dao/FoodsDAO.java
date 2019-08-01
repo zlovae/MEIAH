@@ -10,13 +10,14 @@ import java.util.List;
 public interface FoodsDAO {
     String TABLE_NAME = "my_foods";
     String INSET_FIELDS = "phone, password, salt";
-    String SELECT_FIELDS = "id, sid, name, photo, photo_sub, cate_id, description, stock, price, status, create_time";
+    String SELECT_FIELDS = "id, sid, name, photo_url, photo_sub, cate_id, description, stock, price, status, create_time";
 
 
     @Select({"select * from my_foods where id=#{id}"})
     @Results(id = "FoodsMap", value = {
             @Result(column = "name", property = "name", javaType = String.class),
-            @Result(column = "photo", property = "photo", javaType = String.class),
+            @Result(column = "sid", property = "store_id", javaType = Long.class),
+            @Result(column = "photo_url", property = "photo", javaType = String.class),
             @Result(column = "photo_sub", property = "photo_sub", javaType = String.class),
             @Result(column = "cate_id", property = "cate_id", javaType = Long.class),
             @Result(column = "description", property = "description", javaType = String.class),

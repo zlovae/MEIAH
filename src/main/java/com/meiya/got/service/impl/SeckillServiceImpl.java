@@ -78,7 +78,7 @@ public class SeckillServiceImpl implements ISeckillService {
      * @param seckFoodId
      * @return
      */
-    public ServerResponse createSeckillPath(Long userId, long seckFoodId) {
+    public ServerResponse<String> createSeckillPath(Long userId, long seckFoodId) {
         try {
             // 随机生成秒杀地址
             String path = MD5Util.MD5(UUIDUtil.uuid() + "123456");

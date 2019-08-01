@@ -188,7 +188,7 @@ public class SeckillController implements InitializingBean {
 
                 seckillFoodVo.setId(seckillVo.getId());
                 seckillFoodVo.setName(food.getName());
-                seckillFoodVo.setDescribe(food.getDescription());
+                seckillFoodVo.setDescription(food.getDescription());
                 seckillFoodVo.setPhoto_url(food.getPhoto());
                 seckillFoodVo.setGoods_id(food.getId());
                 //seckillFoodVo.setCounts(seckillVo.getCounts());
