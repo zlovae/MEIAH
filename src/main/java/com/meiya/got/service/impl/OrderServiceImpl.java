@@ -386,7 +386,6 @@ public class OrderServiceImpl implements IOrderService {
                         //response.getOutTradeNo());
                 //logger.info("filePath:" + filePath);
                 //ZxingUtils.getQRCodeImge(response.getQrCode(), 256, filePath);
-                order.setStatus(20);
                 order.setQr_code(response.getQrCode());
                 orderDAO.updateByKey(order);
                 //TODO 二维码存缓存并返回给客户端

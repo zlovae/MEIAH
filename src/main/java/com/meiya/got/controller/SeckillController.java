@@ -158,8 +158,9 @@ public class SeckillController implements InitializingBean {
      * */
     @RequestMapping(value = "pay")
     @ResponseBody
-    public ServerResponse paySeckill(@RequestParam("uid")Long userId, @RequestParam("skid")Long seckFoodId) {
+    public ServerResponse paySeckill(@RequestParam("uid")Long userId, @RequestParam("skid")Long seckFoodId, @RequestParam("address")String address, @RequestParam("notes")String notes) {
         //return seckillService.
+        //TODO
         return null;
     }
 

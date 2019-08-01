@@ -17,7 +17,7 @@ public interface FoodsDAO {
     @Results(id = "FoodsMap", value = {
             @Result(column = "name", property = "name", javaType = String.class),
             @Result(column = "sid", property = "store_id", javaType = Long.class),
-            @Result(column = "photo_url", property = "photo", javaType = String.class),
+            @Result(column = "photo", property = "photo", javaType = String.class),
             @Result(column = "photo_sub", property = "photo_sub", javaType = String.class),
             @Result(column = "cate_id", property = "cate_id", javaType = Long.class),
             @Result(column = "description", property = "description", javaType = String.class),
