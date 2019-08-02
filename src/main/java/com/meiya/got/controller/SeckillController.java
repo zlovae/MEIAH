@@ -121,21 +121,21 @@ public class SeckillController implements InitializingBean {
             return ServerResponse.createByErrorMessage("非法访问");
         }
 
-        //0.判断是否频繁请求
-        if(!jedisUtil.ratelimit(RedisKeyUtil.getSeckillVisitTimesKey(userId))) {
-            return ServerResponse.createByErrorMessage("访问过于频繁，请稍后重试");
-        }
+//        //0.判断是否频繁请求
+//        if(!jedisUtil.ratelimit(RedisKeyUtil.getSeckillVisitTimesKey(userId))) {
+//            return ServerResponse.createByErrorMessage("访问过于频繁，请稍后重试");
+//        }
 
         //1.检测商品是否还有库存，有则进行下一步，没有则返回结束消息
         boolean over = localStockMap.get(secFoodId);
         if(over)
             return ServerResponse.createByErrorMessage("秒杀结束");
-
-        //2.检测用户是否已对对应商品进行了秒杀，有则转到付款页面，没有则进行下一步
-        boolean ordered = jedisUtil.sismember(RedisKeyUtil.getSeckillOrderKey(), RedisKeyUtil.getSeckillOrderValue(userId, secFoodId));
-        if(ordered) {
-            return ServerResponse.createByErrorMessage("您已秒杀过该商品");
-        }
+//
+//        //2.检测用户是否已对对应商品进行了秒杀，有则转到付款页面，没有则进行下一步
+//        boolean ordered = jedisUtil.sismember(RedisKeyUtil.getSeckillOrderKey(), RedisKeyUtil.getSeckillOrderValue(userId, secFoodId));
+//        if(ordered) {
+//            return ServerResponse.createByErrorMessage("您已秒杀过该商品");
+//        }
 
         //1.redis预减库存
         String key = RedisKeyUtil.getSeckillStockKey(secFoodId);
